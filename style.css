@@ -1,0 +1,473 @@
+/* =========================================
+   TEMA VISUAL INFO LOMBA KSE (FINAL)
+   Warna: Biru Tua (KSE), Emas (Prestasi), Putih (Bersih)
+   ========================================= */
+
+/* 1. VARIABEL & RESET */
+:root {
+    /* Palet Warna KSE */
+    --kse-blue: #003366;       /* Biru Tua KSE */
+    --kse-blue-dark: #002244;  /* Biru Lebih Gelap (Hover) */
+    --kse-gold: #fbbf24;       /* Kuning Emas (Aksen) */
+    --kse-gold-dark: #d97706;  /* Emas Gelap (Teks) */
+    
+    /* Warna Interface */
+    --bg-page: #f8fafc;        /* Background Halaman (Abu sangat muda) */
+    --bg-card: #ffffff;        /* Background Kartu */
+    --text-main: #1e293b;      /* Teks Utama (Hampir Hitam) */
+    --text-muted: #64748b;     /* Teks Sekunder (Abu-abu) */
+    --border: #e2e8f0;         /* Garis Batas */
+    
+    /* Efek Visual */
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --radius: 16px;            /* Sudut melengkung */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    line-height: 1.6;
+}
+
+/* 2. HEADER (NAVIGASI ATAS) */
+.main-header {
+    background: linear-gradient(135deg, var(--kse-blue) 0%, var(--kse-blue-dark) 100%);
+    color: white;
+    padding: 2.5rem 0;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    text-align: center;
+}
+
+.header-logo {
+    height: 70px;
+    width: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.brand {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.5px;
+}
+
+.tagline {
+    font-size: 1rem;
+    color: var(--kse-gold);
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+/* 3. FILTER & PENCARIAN (STICKY) */
+.filter-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.filter-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Kotak Pencarian */
+.search-box {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+    max-width: 500px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--kse-blue);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 3rem;
+    border: 2px solid var(--border);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--kse-blue);
+    box-shadow: 0 0 0 4px rgba(0, 51, 102, 0.1);
+}
+
+/* Tombol Filter */
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.filter-btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--kse-blue);
+    color: var(--kse-blue);
+}
+
+.filter-btn.active {
+    background: var(--kse-blue);
+    color: white;
+    border-color: var(--kse-blue);
+}
+
+/* 4. CONTAINER KARTU LOMBA */
+.main-content {
+    padding: 2rem 0;
+    min-height: 60vh;
+}
+
+.lomba-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* 5. KARTU LOMBA (CARD) */
+.lomba-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.lomba-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--kse-blue);
+}
+
+/* Aksen garis emas/biru di atas kartu */
+.lomba-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(to right, var(--kse-blue), var(--kse-gold));
+}
+
+.card-content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Kartu (Status) */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    margin-top: 0.5rem;
+}
+
+.status-badge {
+    padding: 0.3rem 0.8rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.status-badge.open { background: #dcfce7; color: #15803d; } /* Hijau */
+.status-badge.coming { background: #fef3c7; color: #b45309; } /* Oranye */
+.status-badge.closed { background: #f1f5f9; color: #64748b; } /* Abu */
+
+.urgency-badge {
+    font-size: 0.75rem; font-weight: 700;
+    padding: 0.3rem 0.6rem; border-radius: 8px; margin-left: 0.5rem;
+}
+.urgent-critical { background: #ef4444; color: white; animation: pulse 1.5s infinite; }
+.urgent { background: #f97316; color: white; }
+.hot { background: var(--kse-gold); color: #000; }
+
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+/* Judul & Info Dasar */
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    color: var(--kse-blue);
+}
+
+.basic-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+}
+
+.basic-info span {
+    background: #f1f5f9;
+    color: var(--text-muted);
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border: 1px solid var(--border);
+}
+
+/* Detail Lomba */
+.organizer, .prize, .fee {
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+.organizer i, .prize i, .fee i { color: var(--kse-blue); width: 16px; text-align: center; }
+
+/* Deadline Box */
+.deadline {
+    margin-top: auto;
+    background: #fffbeb; /* Kuning sangat muda */
+    border: 1px solid #fcd34d;
+    color: #92400e;
+    padding: 0.8rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+
+/* Tombol Aksi */
+.card-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+}
+
+.btn-primary {
+    background: var(--kse-blue);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 10px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-primary:hover { background: var(--kse-blue-dark); }
+
+.btn-secondary {
+    background: white;
+    color: var(--kse-blue);
+    padding: 0.75rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid var(--kse-blue);
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-secondary:hover { background: #f0f9ff; }
+.btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+/* 6. MODAL (POPUP DETAIL) */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.75);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 90%; max-width: 600px; max-height: 85vh;
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.modal-title { color: var(--kse-blue); font-weight: 800; margin-bottom: 1.5rem; font-size: 1.8rem; }
+.modal-close-btn {
+    position: absolute; top: 1.5rem; right: 1.5rem; font-size: 2rem;
+    background: none; border: none; color: #94a3b8; cursor: pointer;
+    line-height: 1; transition: 0.2s;
+}
+.modal-close-btn:hover { color: var(--kse-blue); }
+
+.modal-section {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 1.5rem;
+}
+.modal-section:last-child { border: none; }
+
+.modal-section h5 {
+    color: var(--kse-blue);
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+    display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* 7. FOOTER & UTILITIES */
+.main-footer {
+    background: var(--kse-blue);
+    color: white;
+    text-align: center;
+    padding: 2.5rem 0;
+    margin-top: 4rem;
+}
+.main-footer p { opacity: 0.9; margin: 0; }
+
+.loading-spinner, .no-results, .empty-state, .error-state {
+    text-align: center; padding: 4rem 2rem; color: var(--text-muted);
+}
+.loading-spinner i, .no-results i, .empty-state i {
+    font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.5;
+}
+.spinner {
+    width: 40px; height: 40px;
+    border: 4px solid #e2e8f0; border-top-color: var(--kse-blue);
+    border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 8. RESPONSIVE (HP) */
+@media (max-width: 768px) {
+    .header-content { flex-direction: column; gap: 1rem; }
+    .brand { font-size: 1.8rem; }
+    .search-box { width: 100%; max-width: none; }
+    .filter-container { flex-direction: column; }
+    .card-actions { grid-template-columns: 1fr; } /* Tombol jadi atas bawah di HP */
+    .modal-content { padding: 1.5rem; }
+}
+/* ===== FOOTER KHUSUS PKSE UNRI ===== */
+.main-footer {
+    background: var(--kse-blue-dark);
+    color: white;
+    text-align: center;
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+    border-top: 5px solid var(--kse-gold);
+}
+
+.footer-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Garis pemisah vertikal antara logo Paguyuban dan Kabinet */
+.separator {
+    width: 2px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.footer-logos img {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+    opacity: 0.95;
+    object-fit: contain; /* Agar gambar tidak gepeng */
+}
+
+.footer-logos img:hover {
+    transform: scale(1.1);
+    opacity: 1;
+}
+
+/* Kustomisasi Ukuran agar seimbang */
+.logo-paguyuban {
+    height: 65px; /* Logo PKSE biasanya agak tinggi */
+    width: auto;
+}
+
+.logo-kabinet {
+    height: 55px; /* Logo kabinet biasanya memanjang, jadi tingginya dikurangi dikit biar proporsional */
+    width: auto;
+}
+
+.footer-text p { margin: 0.3rem 0; }
+
+.footer-sub {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
+.footer-cabinet {
+    font-size: 0.85rem;
+    color: var(--kse-gold);
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 0.8rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: inline-block;
+}
+
+/* Responsif untuk HP */
+@media (max-width: 480px) {
+    .footer-logos { gap: 1rem; }
+    .logo-paguyuban { height: 50px; }
+    .logo-kabinet { height: 40px; }
+}

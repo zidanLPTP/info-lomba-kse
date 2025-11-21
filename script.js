@@ -1,5 +1,5 @@
 // =============================================
-// MAIN APPLICATION LOGIC - SMART HEADER VERSION
+// KSEUNRIPEDIA LOGIC - MULTI CATEGORY SUPPORT
 // =============================================
 
 class InfoLombaApp {
@@ -8,46 +8,52 @@ class InfoLombaApp {
         this.allData = [];
         this.currentFilters = {
             search: '',
-            status: 'all',
-            category: 'all',
-            type: 'all'
+            category: 'all', // Filter Kategori Utama
+            status: 'all'    // Filter Status (Open/Closed)
         };
         this.init();
     }
 
     async init() {
         try {
-            console.log('🚀 Initializing Info Lomba KSE App...');
+            console.log('🚀 Initializing KSEUNRIPEDIA...');
             this.initEventListeners();
             await this.loadData();
             this.isInitialized = true;
-            console.log('✅ App initialized successfully');
         } catch (error) {
-            console.error('❌ App initialization failed:', error);
+            console.error(error);
             this.showError('Gagal memuat data. Silakan refresh halaman.');
         }
     }
 
     initEventListeners() {
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', this.debounce(() => {
-            this.currentFilters.search = searchInput.value;
+        // Search Listener
+        document.getElementById('searchInput').addEventListener('input', this.debounce((e) => {
+            this.currentFilters.search = e.target.value;
             this.renderData();
         }, 300));
 
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // Tab Kategori Utama (Lomba, Beasiswa, dll)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                e.target.classList.add('active');
-                this.currentFilters.status = e.target.dataset.filter;
+                const target = e.target.closest('.tab-btn');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                target.classList.add('active');
+                
+                this.currentFilters.category = target.dataset.category;
                 this.renderData();
             });
         });
 
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('refresh-btn')) {
-                this.loadData();
-            }
+        // Filter Status (Open, Coming)
+        document.querySelectorAll('.filter-pill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                this.currentFilters.status = e.target.dataset.status;
+                this.renderData();
+            });
         });
     }
 
@@ -56,148 +62,118 @@ class InfoLombaApp {
             this.showLoading(true);
             const apiUrl = `${CONFIG.SHEETS_TO_API.BASE_URL}/${CONFIG.SHEETS_TO_API.USER_KEY}/${encodeURIComponent(CONFIG.SHEETS_TO_API.SHEET_NAME)}`;
             
-            console.log('📥 Fetching data from:', apiUrl);
-
-            const response = await fetch(apiUrl, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
-            });
-
+            const response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+            
             const data = await response.json();
             
-            // === DIAGNOSTIC TOOL ===
-            // Ini akan mencetak nama-nama kolom yang BENAR-BENAR diterima dari API
+            // Diagnostik Header
             if (data.data && data.data.length > 0) {
-                console.log('🔍 DIAGNOSTIK HEADER (Nama kolom yang terbaca):', Object.keys(data.data[0]));
+                console.log('🔍 HEADER DETECTED:', Object.keys(data.data[0]));
             }
-            // =======================
-
-            console.log('📊 Raw Data Count:', data.data ? data.data.length : 0);
 
             this.allData = this.processApiData(data.data);
-            
-            console.log(`✅ Processed ${this.allData.length} valid records`);
+            console.log(`✅ Loaded ${this.allData.length} items`);
             this.renderData();
 
         } catch (error) {
-            console.error('❌ Error loading data:', error);
-            this.showError(`Gagal memuat data: ${error.message}`);
+            console.error('Error:', error);
+            this.showError(error.message);
         } finally {
             this.showLoading(false);
         }
     }
 
-    // FUNGSI BARU: Mencari kolom dengan cerdas (mengabaikan spasi & huruf besar)
     findValueByKey(record, searchKey) {
-        // 1. Cek exact match dulu
         if (record[searchKey] !== undefined) return record[searchKey];
-
-        // 2. Cari yang mirip (trim spasi & uppercase)
         const keys = Object.keys(record);
-        const foundKey = keys.find(k => 
-            k.trim().toUpperCase() === searchKey.trim().toUpperCase()
-        );
-
+        const foundKey = keys.find(k => k.trim().toUpperCase() === searchKey.trim().toUpperCase());
         return foundKey ? record[foundKey] : undefined;
     }
 
     processApiData(apiData) {
         if (!Array.isArray(apiData)) return [];
         
-        return apiData.map((record, index) => {
-            // Helper membersihkan field menggunakan pencarian cerdas
+        return apiData.map((record) => {
             const clean = (key, fallback) => {
                 const val = this.findValueByKey(record, key);
                 if (!val || val.toString().trim() === '' || val.toString().trim() === '-') return fallback;
                 return val.toString().trim();
             };
 
-            // --- UPDATED LOGIC STARTS HERE ---
-            
-            // 1. Cek apakah baris ini benar-benar kosong (semua value "")
+            // Skip baris kosong
             const values = Object.values(record);
-            const isRowEmpty = values.every(val => !val || val.toString().trim() === "");
+            if (values.every(val => !val || val.toString().trim() === "")) return null;
 
-            // Jika baris kosong, return null tanpa warning (SILENT SKIP)
-            if (isRowEmpty) return null;
-
-            // 2. Cek field wajib
-            const namaLomba = clean('NAMA LOMBA', null);
+            // MAPPING DATA GFORM BARU
+            // Prioritas: JUDUL KEGIATAN -> Fallback: NAMA LOMBA
+            const judul = clean('JUDUL KEGIATAN', clean('NAMA LOMBA', null));
             const penyelenggara = clean('PENYELENGGARA', null);
+            
+            if (!judul || !penyelenggara) return null;
 
-            // Jika baris ada isinya TAPI Nama/Penyelenggara kosong, baru kasih warning
-            if (!namaLomba || !penyelenggara) {
-                // Uncomment baris bawah ini hanya jika kamu ingin debugging data rusak
-                // console.warn(`⚠️ Skipped Row ${index + 2}: Missing Name/Organizer`);
-                return null;
-            }
+            // Ambil Jenis Informasi (Lomba/Beasiswa/dll)
+            // Default ke 'Lomba' jika kolom ini belum diisi di sheet lama
+            let jenisInfo = clean('JENIS INFORMASI', 'Lomba'); 
 
-            // --- UPDATED LOGIC ENDS HERE ---
+            // Mapping Benefit
+            let benefit = clean('BENEFIT / HADIAH', clean('HADIAH & PENGHARGAAN', 'Lihat detail'));
 
             let rawStatus = this.findValueByKey(record, 'STATUS_APPROVAL') || 'PENDING';
-            rawStatus = rawStatus.toString().toUpperCase().trim();
 
             const cleaned = {
-                id: 'lomba_' + Math.random().toString(36).substr(2, 9),
-                namaLomba: namaLomba,
+                id: 'item_' + Math.random().toString(36).substr(2, 9),
+                judul: judul,
+                jenis: jenisInfo, // Ini kunci utamanya
                 penyelenggara: penyelenggara,
                 
-                kategori: clean('KATEGORI', 'Umum'),
-                jenisPartisipasi: clean('JENIS PARTISIPASI', 'Tidak ada data'),
-                levelPeserta: clean('LEVEL PESERTA', 'Tidak ada data'),
+                benefit: benefit,
+                biaya: clean('BIAYA PENDAFTARAN', 'Gratis'),
                 bidang: clean('BIDANG LOMBA', 'Umum'),
-                
-                hadiah: clean('HADIAH & PENGHARGAAN', 'Tidak ada info hadiah'),
-                biaya: clean('BIAYA PENDAFTARAN', 'Tidak diketahui'),
                 
                 tanggalMulai: clean('TANGGAL MULAI PENDAFTARAN', ''),
                 deadline: clean('DEADLINE PENDAFTARAN', ''),
                 
-                linkPendaftaran: clean('LINK PENDAFTARAN/RESMI', ''),
-                contactPerson: clean('NARAHUBUNG', 'Tidak ada kontak'),
+                link: clean('LINK PENDAFTARAN/RESMI', ''),
+                kontak: clean('NARAHUBUNG', '-'),
                 deskripsi: clean('DESKRIPSI SINGKAT LOMBA', 'Tidak ada deskripsi.'),
-                inputBy: clean('DIVISI YANG MENGINPUT DATA', 'Anonim'),
                 
-                statusApproval: rawStatus,
-                timestamp: new Date().toISOString()
+                statusApproval: rawStatus.toString().toUpperCase().trim()
             };
 
             cleaned.status = this.calculateStatus(cleaned.tanggalMulai, cleaned.deadline);
             cleaned.urgency = this.calculateUrgency(cleaned.deadline, cleaned.status);
-            cleaned.simplifiedHadiah = this.simplifyHadiah(cleaned.hadiah);
 
             return cleaned;
-        }).filter(record => record !== null);
+        }).filter(r => r !== null);
     }
 
     filterData() {
         let filtered = this.allData;
 
-        // 1. Filter APPROVED (Lebih longgar: cek apakah mengandung kata APPROVED)
-        filtered = filtered.filter(item => {
-            return item.statusApproval.includes('APPROVED');
-        });
+        // 1. Filter Status Approved
+        filtered = filtered.filter(item => item.statusApproval.includes('APPROVED'));
 
-        // 2. Filter Search
-        if (this.currentFilters.search) {
-            const term = this.currentFilters.search.toLowerCase();
+        // 2. Filter Kategori (Tab Menu)
+        if (this.currentFilters.category !== 'all') {
             filtered = filtered.filter(item => 
-                item.namaLomba.toLowerCase().includes(term) ||
-                item.penyelenggara.toLowerCase().includes(term) ||
-                item.bidang.toLowerCase().includes(term)
+                item.jenis.toLowerCase().includes(this.currentFilters.category.toLowerCase())
             );
         }
 
+        // 3. Filter Search
+        if (this.currentFilters.search) {
+            const term = this.currentFilters.search.toLowerCase();
+            filtered = filtered.filter(item => 
+                item.judul.toLowerCase().includes(term) ||
+                item.penyelenggara.toLowerCase().includes(term) ||
+                item.jenis.toLowerCase().includes(term)
+            );
+        }
+
+        // 4. Filter Status Waktu
         if (this.currentFilters.status !== 'all') {
             filtered = filtered.filter(item => item.status === this.currentFilters.status);
-        }
-        if (this.currentFilters.category !== 'all') {
-            filtered = filtered.filter(item => item.kategori === this.currentFilters.category);
-        }
-        if (this.currentFilters.type !== 'all') {
-            filtered = filtered.filter(item => item.jenisPartisipasi === this.currentFilters.type);
         }
 
         return filtered;
@@ -208,15 +184,9 @@ class InfoLombaApp {
         const container = document.getElementById('lombaContainer');
         const noResults = document.getElementById('noResults');
 
-        console.log(`🎨 Rendering: ${filteredData.length} items from ${this.allData.length} total`);
-        
         if (filteredData.length === 0) {
-            if (this.allData.length === 0) {
-                this.showEmptyDataMessage();
-            } else {
-                container.style.display = 'none';
-                noResults.style.display = 'block';
-            }
+            container.style.display = 'none';
+            noResults.style.display = 'block';
         } else {
             container.style.display = 'grid';
             noResults.style.display = 'none';
@@ -224,171 +194,100 @@ class InfoLombaApp {
         }
     }
 
-    // ... HELPERS ...
-
-    parseDate(dateString) {
-        if (!dateString) return null;
-        const parts = dateString.split('/');
-        if (parts.length === 3) {
-            return new Date(`${parts[2]}-${parts[1]}-${parts[0]}T00:00:00`);
-        }
-        const date = new Date(dateString);
-        if (!isNaN(date.getTime())) return date;
-        return null;
-    }
-
-    calculateStatus(tanggalMulai, deadline) {
-        const now = new Date();
-        const startDate = this.parseDate(tanggalMulai);
-        const endDate = this.parseDate(deadline);
-        if (!endDate || isNaN(endDate.getTime())) return 'unknown';
-        if (now > endDate) return 'closed';
-        if (startDate && !isNaN(startDate.getTime()) && now < startDate) return 'coming';
-        return 'open';
-    }
-
-    calculateUrgency(deadline, status) {
-        if (status !== 'open' || !deadline) return null;
-        const now = new Date();
-        const endDate = this.parseDate(deadline);
-        if (!endDate || isNaN(endDate.getTime())) return null;
-        const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
-        if (daysLeft < 0) return null;
-        if (daysLeft === 0) return { badge: "⏰ TUTUP HARI INI!", class: "urgent-critical" };
-        if (daysLeft <= 1) return { badge: "🚨 BESOK TUTUP!", class: "urgent-critical" };
-        if (daysLeft <= 3) return { badge: "⏰ TUTUP SEGERA", class: "urgent" };
-        if (daysLeft <= 7) return { badge: "🔥 BURUAN!", class: "hot" };
-        return null;
-    }
-
-    simplifyHadiah(hadiahText) {
-        if (!hadiahText) return 'Tidak ada informasi hadiah';
-        if (hadiahText.length > 70) return hadiahText.substring(0, 70) + '...';
-        return hadiahText;
-    }
-
     generateCardsHTML(data) {
-        return data.map(item => `
+        return data.map(item => {
+            // Ikon dinamis sesuai jenis
+            let iconClass = 'fa-trophy';
+            if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
+            if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
+            if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
+
+            return `
             <div class="lomba-card" data-id="${item.id}">
                 <div class="card-content"> 
                     <div class="card-header">
-                        <span class="status-badge ${item.status}">
-                            ${this.getStatusEmoji(item.status)} ${this.getStatusText(item.status)}
+                        <span class="category-badge">
+                            <i class="fas ${iconClass}"></i> ${item.jenis}
                         </span>
-                        ${item.urgency ? `<span class="urgency-badge ${item.urgency.class}">${item.urgency.badge}</span>` : ''}
+                        <span class="status-badge ${item.status}">
+                            ${this.getStatusText(item.status)}
+                        </span>
                     </div>
                     
-                    <h3 class="card-title">${this.escapeHTML(item.namaLomba)}</h3>
+                    <h3 class="card-title">${this.escapeHTML(item.judul)}</h3>
                     
-                    <div class="basic-info">
-                        <span>${this.getCategoryEmoji(item.kategori)} ${item.kategori}</span>
-                        <span>${this.getTypeEmoji(item.jenisPartisipasi)} ${item.jenisPartisipasi}</span>
-                        <span>🎓 ${item.levelPeserta}</span>
-                        <span><i class="fas fa-tag" style="opacity: 0.7;"></i> ${this.escapeHTML(item.bidang)}</span>
+                    <p class="organizer"><i class="fas fa-building"></i> ${this.escapeHTML(item.penyelenggara)}</p>
+                    
+                    <div class="info-row">
+                        <span class="info-tag"><i class="fas fa-gift"></i> ${this.escapeHTML(item.benefit).substring(0,30)}...</span>
+                        <span class="info-tag"><i class="fas fa-tag"></i> ${this.escapeHTML(item.biaya)}</span>
                     </div>
                     
-                    <p class="organizer">🏛️ ${this.escapeHTML(item.penyelenggara)}</p>
-                    <p class="prize">🏆 ${this.escapeHTML(item.simplifiedHadiah)}</p>
-                    <p class="fee">💰 ${this.escapeHTML(item.biaya)}</p>
-                    
+                    ${item.urgency ? `<div class="urgency-bar ${item.urgency.class}">${item.urgency.badge}</div>` : ''}
+
                     <div class="deadline">
-                        <strong>⏰ ${this.formatDate(item.deadline)}</strong>
-                        <span class="countdown">${item.urgency ? item.urgency.badge : this.getCountdownText(item.deadline)}</span>
+                        <span><i class="far fa-clock"></i> Deadline:</span>
+                        <strong>${this.formatDate(item.deadline)}</strong>
                     </div>
-                    
-                    <p class="contact">📞 ${this.escapeHTML(item.contactPerson)}</p>
                     
                     <div class="card-actions">
-                        ${item.linkPendaftaran ? 
-                            `<a href="${this.escapeHTML(item.linkPendaftaran)}" target="_blank" class="btn-primary">📝 Daftar Sekarang</a>` :
-                            `<button class="btn-primary" disabled>📝 Link Tidak Tersedia</button>`
+                        ${item.link ? 
+                            `<a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary">Buka Link</a>` :
+                            `<button class="btn-primary" disabled>Link -</button>`
                         }
-                        
-                        <button class="btn-secondary" onclick="app.showDetail('${item.id}')">ℹ️ Detail Lengkap</button>
+                        <button class="btn-secondary" onclick="app.showDetail('${item.id}')">Detail</button>
                     </div>
                 </div> 
             </div>
-        `).join('');
+        `}).join('');
     }
 
-    getStatusEmoji(status) {
-        const emojis = { 'open': '🟢', 'coming': '🔵', 'closed': '🔴', 'unknown': '⚪' };
-        return emojis[status] || '⚪';
-    }
+    // Modal Detail
+    showDetail(itemId) {
+        const item = this.allData.find(i => i.id === itemId);
+        if (!item) return;
 
-    getStatusText(status) {
-        const texts = { 'open': 'OPEN', 'coming': 'COMING SOON', 'closed': 'CLOSED', 'unknown': 'UNKNOWN' };
-        return texts[status] || 'UNKNOWN';
-    }
-
-    getCategoryEmoji(category) {
-        const emojis = { 'Internasional': '🌍', 'Nasional': '🇮🇩', 'Regional': '🏠' };
-        return emojis[category] || '🎯';
-    }
-
-    getTypeEmoji(type) {
-        const emojis = { 'Individu': '👤', 'Kelompok': '👥' };
-        return emojis[type] || '👥';
-    }
-
-    formatDate(dateString) {
-        if (!dateString) return 'Tidak ada deadline';
-        try {
-            const date = this.parseDate(dateString); 
-            if (!date || isNaN(date.getTime())) return 'Format tanggal salah';
-            return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-        } catch (error) {
-            return dateString;
-        }
-    }
-
-    getCountdownText(deadline) {
-        if (!deadline) return '';
-        const now = new Date();
-        const endDate = this.parseDate(deadline); 
-        if (!endDate || isNaN(endDate.getTime())) return '';
-        const daysLeft = Math.ceil((endDate - now) / (1000 * 60 * 60 * 24));
-        if (daysLeft < 0) return '⏰ Sudah Berakhir';
-        if (daysLeft === 0) return '⏰ Tutup Hari Ini!';
-        if (daysLeft === 1) return '🚀 Besok Tutup!';
-        return `📅 ${daysLeft} Hari Lagi`;
-    }
-
-    showDetail(lombaId) {
-        const lomba = this.allData.find(item => item.id === lombaId);
-        if (!lomba) return;
-
-        const modal = document.getElementById('detailModal');
         const modalBody = document.getElementById('modalBody');
+        
+        // Ikon Besar
+        let iconClass = 'fa-trophy';
+        if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
+        if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
+        if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
 
         modalBody.innerHTML = `
-            <h2 class="modal-title">${this.escapeHTML(lomba.namaLomba)}</h2>
-
-            <div class="modal-section">
-                <h5><i class="fas fa-info-circle"></i> Deskripsi</h5>
-                <p>${this.escapeHTML(lomba.deskripsi)}</p>
+            <div style="text-align:center; margin-bottom:1.5rem; color:var(--kse-blue);">
+                <i class="fas ${iconClass}" style="font-size:3rem; margin-bottom:1rem;"></i>
+                <h2 class="modal-title" style="margin-bottom:0.5rem;">${this.escapeHTML(item.judul)}</h2>
+                <span class="category-badge">${item.jenis}</span>
             </div>
-
+            
             <div class="modal-section">
-                <h5><i class="fas fa-trophy"></i> Hadiah</h5>
-                <p>${this.escapeHTML(lomba.hadiah)}</p>
+                <h5><i class="fas fa-align-left"></i> Deskripsi</h5>
+                <p>${this.escapeHTML(item.deskripsi)}</p>
             </div>
-
+            
             <div class="modal-section">
-                <h5><i class="fas fa-id-card"></i> Info Kontak & Pendaftaran</h5>
+                <h5><i class="fas fa-star"></i> Benefit / Info</h5>
+                <p>${this.escapeHTML(item.benefit)}</p>
+            </div>
+            
+            <div class="modal-section">
+                <h5><i class="fas fa-info-circle"></i> Detail Lainnya</h5>
                 <ul>
-                    <li><i class="fas fa-user"></i> ${this.escapeHTML(lomba.contactPerson)}</li>
-                    <li><i class="fas fa-calendar-alt"></i> Deadline: ${this.formatDate(lomba.deadline)}</li>
+                    <li><i class="fas fa-building"></i> Penyelenggara: ${this.escapeHTML(item.penyelenggara)}</li>
+                    <li><i class="fas fa-money-bill-wave"></i> Biaya: ${this.escapeHTML(item.biaya)}</li>
+                    <li><i class="fas fa-calendar-alt"></i> Deadline: ${this.formatDate(item.deadline)}</li>
+                    <li><i class="fas fa-user"></i> Kontak: ${this.escapeHTML(item.kontak)}</li>
                 </ul>
             </div>
-
-            ${lomba.linkPendaftaran ? 
-                `<a href="${this.escapeHTML(lomba.linkPendaftaran)}" target="_blank" class="btn-primary" style="width: 100%; text-align: center; padding: 1rem; font-size: 1.1rem;">📝 Kunjungi Link Pendaftaran</a>` :
-                ''}
+            
+            ${item.link ? 
+                `<a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; margin-top:1rem; text-align:center; padding:1rem;">Buka Link Pendaftaran/Info</a>` : ''}
         `;
-
-        modal.style.display = 'flex';
-        setTimeout(() => modal.classList.add('show'), 10);
+        
+        document.getElementById('detailModal').style.display = 'flex';
+        setTimeout(() => document.getElementById('detailModal').classList.add('show'), 10);
     }
 
     closeDetailModal() {
@@ -397,61 +296,27 @@ class InfoLombaApp {
         setTimeout(() => { modal.style.display = 'none'; }, 300);
     }
 
-    showEmptyDataMessage() {
-        const container = document.getElementById('lombaContainer');
-        container.style.display = 'block';
-        container.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-clipboard-list"></i>
-                <h3>Belum Ada Data Lomba</h3>
-                <p>Pastikan sudah menginput data di Google Form dan statusnya "APPROVED".</p>
-                <p class="small text-muted">Cek Console (F12) untuk melihat diagnostik nama kolom.</p>
-            </div>
-        `;
-    }
-
     showLoading(show) {
-        const spinner = document.getElementById('loadingSpinner');
-        const container = document.getElementById('lombaContainer');
-        
-        if (show) {
-            spinner.style.display = 'block';
-            container.style.display = 'none';
-        } else {
-            spinner.style.display = 'none';
-        }
+        document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+        document.getElementById('lombaContainer').style.display = show ? 'none' : 'grid';
     }
 
-    showError(message) {
-        const container = document.getElementById('lombaContainer');
-        container.style.display = 'block';
-        container.innerHTML = `
-            <div class="error-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Terjadi Kesalahan</h3>
-                <p>${message}</p>
-                <button class="btn-primary refresh-btn" onclick="app.loadData()">🔄 Coba Lagi</button>
-            </div>
-        `;
+    showError(msg) {
+        document.getElementById('lombaContainer').innerHTML = `<div class="error-state"><p>${msg}</p></div>`;
+        document.getElementById('lombaContainer').style.display = 'block';
     }
 
-    escapeHTML(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
+    // Helpers
+    parseDate(d) { if(!d)return null; const p=d.split('/'); if(p.length===3)return new Date(`${p[2]}-${p[1]}-${p[0]}`); return new Date(d); }
+    calculateStatus(s, e) { const now=new Date(); const end=this.parseDate(e); if(!end)return 'unknown'; if(now>end)return 'closed'; const start=this.parseDate(s); if(start&&now<start)return 'coming'; return 'open'; }
+    calculateUrgency(d, s) { if(s!=='open'||!d)return null; const now=new Date(); const end=this.parseDate(d); if(!end)return null; const days=Math.ceil((end-now)/8.64e7); 
+        if(days<=0)return {badge:"HARI INI TERAKHIR!",class:"urgent-critical"};
+        if(days<=3)return {badge:`${days} HARI LAGI`,class:"urgent"};
+        return null;
     }
-
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => { clearTimeout(timeout); func(...args); };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
+    getStatusText(s) { const t={'open':'Buka','coming':'Segera','closed':'Tutup','unknown':''}; return t[s]||''; }
+    formatDate(d) { try{const date=this.parseDate(d); return date?date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):d;}catch(e){return d;} }
+    escapeHTML(t) { if(!t)return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+    debounce(f,w) { let t; return(...a)=>{ clearTimeout(t); t=setTimeout(()=>f.apply(this,a),w); }; }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    window.app = new InfoLombaApp();
-});
+document.addEventListener('DOMContentLoaded', () => { window.app = new InfoLombaApp(); });

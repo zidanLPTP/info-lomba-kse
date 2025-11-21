@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>KSE Info Lomba - Portal Lomba Mahasiswa UNRI</title>
+    <title>KSEUNRIPedia - Portal Informasi KSE UNRI</title>
     <meta name="description" content="Portal informasi lomba, beasiswa, dan kompetisi terupdate khusus untuk beswan Karya Salemba Empat (KSE). Sharing, Networking, Developing.">
     <meta name="keywords" content="Lomba KSE, Info Lomba Mahasiswa, Beasiswa KSE, Karya Salemba Empat, Prestasi Mahasiswa">
     <meta name="author" content="Paguyuban KSE">
@@ -12,13 +12,11 @@
     <link rel="icon" type="image/png" href="logo-kabinet.png">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://kse-info-lomba.github.io/"> <meta property="og:title" content="Info Lomba KSE - Portal Prestasi">
+    <meta property="og:url" content="https://kse-info-lomba.github.io/"> 
+    <meta property="og:title" content="Info Lomba KSE - Portal Prestasi">
     <meta property="og:description" content="Temukan info lomba terbaru dan raih prestasi bersama KSE. Sharing, Networking, Developing.">
-    <meta property="og:image" content="og-image.jpg"> <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Info Lomba KSE">
-    <meta property="twitter:description" content="Pusat informasi kompetisi mahasiswa KSE.">
-    <meta property="twitter:image" content="og-image.jpg">
-
+    <meta property="og:image" content="og-image.jpg"> 
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
@@ -28,9 +26,8 @@
         <div class="header-overlay">
             <div class="container">
                 <div class="header-content">
-                    <img src="logo-kse.png" alt="Logo KSE" class="header-logo" onerror="this.style.display='none'">
                     <div class="header-text">
-                        <h1 class="brand">Info Lomba KSE</h1>
+                        <h1 class="brand">KSEUNRIPEDIA</h1>
                         <p class="tagline">Sharing · Networking · Developing</p>
                     </div>
                 </div>
@@ -38,33 +35,37 @@
         </div>
     </header>
 
-    <section class="filter-section">
+    <section class="nav-section">
         <div class="container">
-            <div class="filter-container">
+            <div class="search-container">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" placeholder="Cari lomba, penyelenggara, atau bidang...">
+                    <input type="text" id="searchInput" placeholder="Cari info apa hari ini?">
                 </div>
+            </div>
 
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="all">Semua</button>
-                    <button class="filter-btn" data-filter="open">Open</button>
-                    <button class="filter-btn" data-filter="coming">Coming Soon</button>
-                    <button class="filter-btn" data-filter="closed">Closed</button>
-                </div>
-                
-                <div class="dropdown-filters" style="display:none;"> <select id="categoryFilter" class="form-select">
-                        <option value="all">Semua Kategori</option>
-                        <option value="Internasional">Internasional</option>
-                        <option value="Nasional">Nasional</option>
-                        <option value="Regional">Regional</option>
-                    </select>
-                    <select id="typeFilter" class="form-select">
-                        <option value="all">Semua Jenis</option>
-                        <option value="Individu">Individu</option>
-                        <option value="Kelompok">Kelompok</option>
-                    </select>
-                </div>
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="all">
+                    <i class="fas fa-th-large"></i> Semua
+                </button>
+                <button class="tab-btn" data-category="Lomba">
+                    <i class="fas fa-trophy"></i> Lomba
+                </button>
+                <button class="tab-btn" data-category="Beasiswa">
+                    <i class="fas fa-graduation-cap"></i> Beasiswa
+                </button>
+                <button class="tab-btn" data-category="Magang">
+                    <i class="fas fa-briefcase"></i> Magang
+                </button>
+                <button class="tab-btn" data-category="Seminar">
+                    <i class="fas fa-microphone"></i> Seminar
+                </button>
+            </div>
+
+            <div class="status-filters">
+                <button class="filter-pill active" data-status="all">Semua Status</button>
+                <button class="filter-pill" data-status="open">Masih Buka</button>
+                <button class="filter-pill" data-status="coming">Akan Datang</button>
             </div>
         </div>
     </section>
@@ -81,8 +82,8 @@
 
             <div id="noResults" class="no-results" style="display: none;">
                 <i class="fas fa-folder-open"></i>
-                <h3>Tidak ada lomba ditemukan</h3>
-                <p>Coba kata kunci lain atau ubah filter pencarian.</p>
+                <h3>Tidak ada info ditemukan</h3>
+                <p>Coba ganti kategori atau kata kunci lain.</p>
             </div>
         </div>
     </main>
@@ -102,16 +103,17 @@
                     <img src="logo-pkse.png" alt="PKSE UNRI" title="Paguyuban KSE UNRI" class="logo-paguyuban">
                     <div class="separator"></div>
                     <img src="logo-kabinet.png" alt="Kabinet Cakrawala Asa" title="Kabinet Cakrawala Asa" class="logo-kabinet">
+                    <div class="separator"></div>
+                    <img src="logo-kse.png" alt="Logo KSE Nasional" title="KSE Nasional" class="logo-kabinet">
                 </div>
             </div>
 
             <div class="footer-text">
-                <h4 class="footer-title">Info Lomba KSE &copy; 2025</h4>
+                <h4 class="footer-title">KSEUNRIPEDIA &copy; 2025</h4>
                 
                 <p class="footer-desc">
                     Dikelola oleh<br>
-                    <span class="highlight-divisi">Divisi DIKLAT</span> & 
-                    <span class="highlight-divisi">Divisi KOMINFO</span>
+                    <span class="highlight-divisi">Divisi Pendidikan dan Pelatihan</span>
                 </p>
                 
                 <p class="footer-paguyuban">Paguyuban Karya Salemba Empat Universitas Riau</p>
@@ -127,10 +129,9 @@
                 <a href="https://www.linkedin.com/in/paguyuban-kse-ur-98423b294/" class="social-link" title="LinkedIn">
                     <i class="fab fa-linkedin"></i>
                 </a>
-            </div>
-
-            <div class="footer-bottom">
-                <span class="cabinet-name">Kabinet Cakrawala Asa</span>
+                <a href="https://www.tiktok.com/@kseunri?is_from_webapp=1&sender_device=pc" class="social-link" title="Tiktok">
+                    <i class="fab fa-tiktok"></i>
+                </a>
             </div>
         </div>
     </footer>

@@ -467,6 +467,30 @@ body {
 
 /* Responsif untuk HP */
 @media (max-width: 480px) {
+   /* Mengecilkan Header Biru */
+    .main-header {
+        padding: 1.5rem 0; /* Lebih tipis */
+    }
+    
+    .header-logo {
+        height: 50px; /* Logo diperkecil */
+    }
+    
+    .brand {
+        font-size: 1.5rem; /* Judul diperkecil */
+    }
+
+    /* Mengecilkan Area Navigasi/Filter */
+    .nav-section {
+        padding: 1rem 0;
+    }
+    
+    /* Mengecilkan tombol kategori biar muat banyak */
+    .tab-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+   
     .footer-logos { gap: 1rem; }
     .logo-paguyuban { height: 50px; }
     .logo-kabinet { height: 40px; }
@@ -478,8 +502,7 @@ body {
 .nav-section {
     background: white;
     padding: 1.5rem 0;
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 100;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     border-bottom: 1px solid var(--border);
@@ -589,3 +612,4 @@ body {
     margin-bottom: 1rem;
     border: 1px solid #fecaca;
 }
+

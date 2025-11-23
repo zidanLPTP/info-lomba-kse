@@ -198,7 +198,7 @@ class InfoLombaApp {
         return data.map(item => {
             // Ikon dinamis sesuai jenis
             let iconClass = 'fa-trophy';
-            if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
+            if (item.jenis.toLowerCase().includes('exchange')) iconClass = 'fa-graduation-cap';
             if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
             if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
 
@@ -251,7 +251,7 @@ class InfoLombaApp {
         
         // Ikon Besar
         let iconClass = 'fa-trophy';
-        if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
+        if (item.jenis.toLowerCase().includes('exchange')) iconClass = 'fa-graduation-cap';
         if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
         if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
 
@@ -320,3 +320,4 @@ class InfoLombaApp {
     debounce(f,w) { let t; return(...a)=>{ clearTimeout(t); t=setTimeout(()=>f.apply(this,a),w); }; }
 }
 document.addEventListener('DOMContentLoaded', () => { window.app = new InfoLombaApp(); });
+

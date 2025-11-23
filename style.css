@@ -503,7 +503,7 @@ body {
     background: white;
     padding: 1.5rem 0;
     position: relative;
-    z-index: 100;
+    z-index: 10;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     border-bottom: 1px solid var(--border);
 }
@@ -612,4 +612,5 @@ body {
     margin-bottom: 1rem;
     border: 1px solid #fecaca;
 }
+
 

@@ -1,26 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>KSEUNRIPedia - Portal Informasi KSE UNRI</title>
-    <meta name="description" content="Portal informasi lomba, beasiswa, dan kompetisi terupdate khusus untuk beswan Karya Salemba Empat (KSE). Sharing, Networking, Developing.">
-    <meta name="keywords" content="Lomba KSE, Info Lomba Mahasiswa, Beasiswa KSE, Karya Salemba Empat, Prestasi Mahasiswa">
+    <meta name="description"
+        content="Portal informasi lomba, beasiswa, dan kompetisi terupdate khusus untuk beswan Karya Salemba Empat (KSE). Sharing, Networking, Developing.">
+    <meta name="keywords"
+        content="Lomba KSE, Info Lomba Mahasiswa, Beasiswa KSE, Karya Salemba Empat, Prestasi Mahasiswa">
     <meta name="author" content="Paguyuban KSE">
-    
+
     <link rel="icon" type="image/png" href="logo-kabinet.png">
 
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://kse-info-lomba.github.io/"> 
+    <meta property="og:url" content="https://kse-info-lomba.github.io/">
     <meta property="og:title" content="Info Lomba KSE - Portal Prestasi">
-    <meta property="og:description" content="Temukan info lomba terbaru dan raih prestasi bersama KSE. Sharing, Networking, Developing.">
-    <meta property="og:image" content="og-image.jpg"> 
-    
+    <meta property="og:description"
+        content="Temukan info lomba terbaru dan raih prestasi bersama KSE. Sharing, Networking, Developing.">
+    <meta property="og:image" content="og-image.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
 </head>
+
 <body>
     <header class="main-header">
         <div class="header-overlay">
@@ -51,14 +61,18 @@
                 <button class="tab-btn" data-category="Lomba">
                     <i class="fas fa-trophy"></i> Lomba
                 </button>
+
                 <button class="tab-btn" data-category="Beasiswa">
-                    <i class="fas fa-graduation-cap"></i> Beasiswa
+                    <i class="fas fa-graduation-cap"></i> Beasiswa KSE
                 </button>
                 <button class="tab-btn" data-category="Magang">
                     <i class="fas fa-briefcase"></i> Magang
                 </button>
                 <button class="tab-btn" data-category="Seminar">
                     <i class="fas fa-microphone"></i> Seminar
+                </button>
+                <button class="tab-btn" data-category="Loker">
+                    <i class="fas fa-user-tie"></i> Lowongan Kerja
                 </button>
             </div>
 
@@ -72,18 +86,113 @@
 
     <main class="main-content">
         <div class="container">
-            <div id="loadingSpinner" class="loading-spinner">
-                <div class="spinner"></div>
-                <p>Sedang mengambil data terbaru...</p>
+            <div id="loadingSpinner" class="skeleton-grid" style="display: none;">
+                <!-- 6 Skeleton Cards -->
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
+                <div class="lomba-card skeleton-card">
+                    <div class="card-content">
+                        <div class="skeleton-header">
+                            <div class="skeleton-box w-30"></div>
+                            <div class="skeleton-box w-20"></div>
+                        </div>
+                        <div class="skeleton-title-box"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line w-70"></div>
+                        <div class="skeleton-actions"></div>
+                    </div>
+                </div>
             </div>
 
             <div id="lombaContainer" class="lomba-container">
-                </div>
+            </div>
 
             <div id="noResults" class="no-results" style="display: none;">
-                <i class="fas fa-folder-open"></i>
-                <h3>Tidak ada info ditemukan</h3>
-                <p>Coba ganti kategori atau kata kunci lain.</p>
+                <svg class="empty-state-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"
+                    style="width: 180px; height: 180px; margin: 0 auto 1.5rem auto;">
+                    <defs>
+                        <linearGradient id="blueGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#003366" />
+                            <stop offset="100%" stop-color="#3b82f6" />
+                        </linearGradient>
+                    </defs>
+                    <path
+                        d="M160,105C160,135 135,160 105,160C70,160 40,135 40,105C40,70 70,40 100,40C130,40 160,70 160,105Z"
+                        fill="#f1f5f9" />
+                    <rect x="75" y="55" width="50" height="70" rx="4" fill="#ffffff" stroke="#cbd5e1"
+                        stroke-width="3" />
+                    <path d="M85,70 L115,70" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+                    <path d="M85,85 L115,85" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+                    <path d="M85,100 L100,100" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="115" cy="115" r="28" fill="#e0f2fe" opacity="0.8" stroke="url(#blueGlow)"
+                        stroke-width="5" />
+                    <path d="M135,135 L160,160" stroke="#fbbf24" stroke-width="10" stroke-linecap="round" />
+                    <path d="M140,140 L155,155" stroke="#d97706" stroke-width="4" stroke-linecap="round" />
+                    <circle cx="150" cy="70" r="4" fill="#fbbf24" />
+                    <circle cx="60" cy="130" r="3" fill="#3b82f6" />
+                    <circle cx="80" cy="45" r="5" fill="#e2e8f0" />
+                </svg>
+                <h3>Yah, Info Lomba Tidak Ketemu</h3>
+                <p style="font-size: 1.05rem; opacity: 0.8;">Coba gunakan kata kunci pencarian yang lain atau ubah
+                    kategori tab di atas.</p>
             </div>
         </div>
     </main>
@@ -95,44 +204,82 @@
         </div>
     </div>
 
-    <footer class="main-footer">
-        <div class="container">
-            
-            <div class="footer-brand">
+    <!-- Tombol Kembali ke Atas (Back to Top) -->
+    <button id="backToTop" class="back-to-top" title="Kembali ke Atas">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <!-- SVG WAVE DIVIDER -->
+    <div class="footer-wave-container">
+        <svg class="footer-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <!-- Background dark blue -->
+            <path fill="var(--kse-blue-dark)" fill-opacity="1"
+                d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+            </path>
+            <!-- Gold Outline Wave -->
+            <path fill="none" stroke="var(--kse-gold)" stroke-width="5"
+                d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224">
+            </path>
+        </svg>
+    </div>
+
+    <footer class="main-footer premium-footer">
+        <div class="container premium-footer-grid">
+
+            <!-- Kolom 1: Brand & Latar Belakang -->
+            <div class="footer-col brand-col">
                 <div class="footer-logos">
                     <img src="logo-pkse.png" alt="PKSE UNRI" title="Paguyuban KSE UNRI" class="logo-paguyuban">
                     <div class="separator"></div>
-                    <img src="logo-kabinet.png" alt="Kabinet Cakrawala Asa" title="Kabinet Cakrawala Asa" class="logo-kabinet">
+                    <img src="logo-kabinet.png" alt="Kabinet Cakrawala Asa" title="Kabinet Cakrawala Asa"
+                        class="logo-kabinet">
                     <div class="separator"></div>
                     <img src="logo-kse.png" alt="Logo KSE Nasional" title="KSE Nasional" class="logo-kabinet">
                 </div>
-            </div>
-
-            <div class="footer-text">
                 <h4 class="footer-title">KSEUNRIPEDIA &copy; 2025</h4>
-                
-                <p class="footer-desc">
-                    Dikelola oleh<br>
-                    <span class="highlight-divisi">Divisi Pendidikan dan Pelatihan</span>
-                </p>
-                
-                <p class="footer-paguyuban">Paguyuban Karya Salemba Empat Universitas Riau</p>
+                <p class="footer-tagline">Menebar inspirasi, meraih prestasi. Portal rujukan beasiswa dan kompetisi
+                    terpusat khusus untuk beswan KSE Universitas Riau.</p>
+
+                <div class="footer-socials premium-socials">
+                    <a href="https://instagram.com/kseunri" target="_blank" class="social-link"
+                        title="Instagram KSE UNRI"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@paguyubankseunri" class="social-link" title="Youtube KSE UNRI"><i
+                            class="fab fa-youtube"></i></a>
+                    <a href="https://www.linkedin.com/in/paguyuban-kse-ur-98423b294/" class="social-link"
+                        title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.tiktok.com/@kseunri?is_from_webapp=1&sender_device=pc" class="social-link"
+                        title="Tiktok"><i class="fab fa-tiktok"></i></a>
+                </div>
             </div>
 
-            <div class="footer-socials">
-                <a href="https://instagram.com/kseunri" target="_blank" class="social-link" title="Instagram KSE UNRI">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="https://www.youtube.com/@paguyubankseunri" class="social-link" title="Youtube KSE UNRI">
-                    <i class="fab fa-youtube"></i>
-                </a>
-                <a href="https://www.linkedin.com/in/paguyuban-kse-ur-98423b294/" class="social-link" title="LinkedIn">
-                    <i class="fab fa-linkedin"></i>
-                </a>
-                <a href="https://www.tiktok.com/@kseunri?is_from_webapp=1&sender_device=pc" class="social-link" title="Tiktok">
-                    <i class="fab fa-tiktok"></i>
-                </a>
+            <!-- Kolom 2: Tautan Cepat -->
+            <div class="footer-col links-col">
+                <h5 class="col-title">Tautan Cepat</h5>
+                <ul class="footer-links">
+                    <li><a href="https://www.instagram.com/kseunri" target="_blank"><i class="fas fa-chevron-right"></i>
+                            Tentang Paguyuban</a></li>
+                    <li><a href="https://wa.me/6283874496044" target="_blank"><i class="fas fa-chevron-right"></i>
+                            Laporkan Bug (Admin)</a></li>
+                </ul>
             </div>
+
+            <!-- Kolom 3: Pengelola -->
+            <div class="footer-col contact-col">
+                <h5 class="col-title">Dikelola Oleh</h5>
+                <div class="pengelola-badge">
+                    <i class="fas fa-award"></i>
+                    <span>Divisi Pendidikan & Pelatihan</span>
+                </div>
+                <p class="footer-paguyuban-name">Paguyuban Karya Salemba Empat<br>Universitas Riau</p>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> kseunri@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Pekanbaru, Riau, Indonesia</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>Didesain dengan <i class="fas fa-heart" style="color:#ef4444;"></i> untuk Beswan KSE UNRI</p>
         </div>
     </footer>
 
@@ -141,4 +288,5 @@
     <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

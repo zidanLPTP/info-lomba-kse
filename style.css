@@ -31,7 +31,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     background-color: var(--bg-page);
     color: var(--text-main);
     line-height: 1.6;
@@ -39,11 +39,19 @@ body {
 
 /* 2. HEADER (NAVIGASI ATAS) */
 .main-header {
-    background: linear-gradient(135deg, var(--kse-blue) 0%, var(--kse-blue-dark) 100%);
+    background: linear-gradient(-45deg, var(--kse-blue), #0f4c81, var(--kse-blue-dark), #1a365d);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
     color: white;
-    padding: 2.5rem 0;
+    padding: 3rem 0;
     position: relative;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .header-content {
@@ -170,23 +178,43 @@ body {
     gap: 1.5rem;
 }
 
-/* 5. KARTU LOMBA (CARD) */
 .lomba-card {
     background: var(--bg-card);
     border-radius: var(--radius);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-soft);
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    z-index: 1;
 }
 
 .lomba-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--kse-blue);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 25px 30px -5px rgba(0, 51, 102, 0.15);
+    border-color: rgba(0, 51, 102, 0.3);
+    z-index: 10;
+}
+
+/* Efek Cahaya Lewat (Shine) saat hover */
+.lomba-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-20deg);
+    transition: left 0.7s ease;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.lomba-card:hover::after {
+    left: 150%;
 }
 
 /* Aksen garis emas/biru di atas kartu */
@@ -374,18 +402,86 @@ body {
 }
 .main-footer p { opacity: 0.9; margin: 0; }
 
-.loading-spinner, .no-results, .empty-state, .error-state {
+.no-results, .empty-state, .error-state {
     text-align: center; padding: 4rem 2rem; color: var(--text-muted);
 }
-.loading-spinner i, .no-results i, .empty-state i {
+.no-results i, .empty-state i {
     font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.5;
 }
-.spinner {
-    width: 40px; height: 40px;
-    border: 4px solid #e2e8f0; border-top-color: var(--kse-blue);
-    border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1rem;
+
+/* 7.5 SKELETON LOADING */
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    padding-bottom: 2rem;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+.skeleton-card {
+    height: 380px; 
+    pointer-events: none;
+}
+.skeleton-box, .skeleton-title-box, .skeleton-line, .skeleton-actions {
+    background: #e2e8f0;
+    border-radius: 6px;
+    background-image: linear-gradient(90deg, #e2e8f0 0px, #f8fafc 40px, #e2e8f0 80px);
+    background-size: 600px;
+    animation: shimmer 1.5s infinite linear;
+}
+.skeleton-header {
+    display: flex; justify-content: space-between; margin-bottom: 1.5rem; margin-top: 0.5rem;
+}
+.skeleton-box { height: 26px; border-radius: 8px; }
+.skeleton-box.w-30 { width: 35%; }
+.skeleton-box.w-20 { width: 25%; }
+.skeleton-title-box { height: 32px; width: 85%; margin-bottom: 1.5rem; border-radius: 8px; }
+.skeleton-line { height: 16px; margin-bottom: 0.8rem; width: 100%; border-radius: 50px; }
+.skeleton-line.w-70 { width: 70%; margin-bottom: 2.5rem; }
+.skeleton-actions { height: 45px; width: 100%; border-radius: 10px; margin-top: auto; }
+
+@keyframes shimmer {
+    0% { background-position: -200px 0; }
+    100% { background-position: 400px 0; }
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0px); }
+}
+.empty-state-img {
+    animation: floatUp 3s ease-in-out infinite;
+}
+
+/* 9. BACK TO TOP BUTTON */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--kse-blue);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0, 51, 102, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 999;
+}
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.back-to-top:hover {
+    background: var(--kse-gold);
+    color: #000;
+    transform: translateY(-5px) scale(1.1);
+}
 
 /* 8. RESPONSIVE (HP) */
 @media (max-width: 768px) {
@@ -396,83 +492,201 @@ body {
     .card-actions { grid-template-columns: 1fr; } /* Tombol jadi atas bawah di HP */
     .modal-content { padding: 1.5rem; }
 }
-/* ===== FOOTER KHUSUS PKSE UNRI ===== */
-.main-footer {
+/* ===== FOOTER PREMIUM PKSE UNRI ===== */
+.footer-wave-container {
+    width: 100%;
+    margin-top: 5rem;
+    overflow: hidden;
+    line-height: 0;
+}
+.footer-wave {
+    width: 100%;
+    height: 100px; /* Lebar SVG wave */
+}
+.premium-footer {
     background: var(--kse-blue-dark);
     color: white;
-    text-align: center;
-    padding: 3rem 0 2rem;
-    margin-top: 4rem;
-    border-top: 5px solid var(--kse-gold);
+    padding: 0 0 1rem 0;
+    margin-top: -1px; /* seamless block */
+    border-top: none;
 }
 
+/* Grid Layout */
+.premium-footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.5fr;
+    gap: 3rem;
+    padding-bottom: 2rem;
+    text-align: left;
+}
+
+/* Kolom Kiri: Brand & Logo */
 .footer-logos {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    gap: 1.2rem;
+    margin-bottom: 1.5rem;
 }
-
-/* Garis pemisah vertikal antara logo Paguyuban dan Kabinet */
+.brand-col .footer-logos {
+    justify-content: flex-start;
+}
 .separator {
     width: 2px;
-    height: 40px;
+    height: 35px;
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 2px;
 }
-
 .footer-logos img {
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     transition: transform 0.3s ease;
     opacity: 0.95;
-    object-fit: contain; /* Agar gambar tidak gepeng */
+    object-fit: contain;
 }
-
 .footer-logos img:hover {
     transform: scale(1.1);
     opacity: 1;
 }
-
-/* Kustomisasi Ukuran agar seimbang */
 .logo-paguyuban {
-    height: 65px; /* Logo PKSE biasanya agak tinggi */
+    height: 55px; /* Diselaraskan kembali sesuai grid 3 kolom */
     width: auto;
 }
-
 .logo-kabinet {
-    height: 55px; /* Logo kabinet biasanya memanjang, jadi tingginya dikurangi dikit biar proporsional */
+    height: 45px;
     width: auto;
 }
+.footer-title {
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    color: var(--kse-gold);
+}
+.footer-tagline {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 90%;
+}
 
-.footer-text p { margin: 0.3rem 0; }
+/* Tautan Cepat */
+.col-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: white;
+    position: relative;
+    padding-bottom: 0.5rem;
+    margin-top: 0;
+}
+.col-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 40px; height: 3px;
+    background: var(--kse-gold);
+    border-radius: 2px;
+}
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.footer-links li {
+    margin-bottom: 0.8rem;
+}
+.footer-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.footer-links a i {
+    font-size: 0.7rem;
+    color: var(--kse-gold);
+    transition: transform 0.3s;
+}
+.footer-links a:hover {
+    color: white;
+    transform: translateX(5px);
+}
 
-.footer-sub {
+/* Pengelola & Kontak */
+.pengelola-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: rgba(251, 191, 36, 0.1);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    padding: 0.6rem 1rem;
+    border-radius: 50px;
+    color: var(--kse-gold);
+    font-weight: 700;
     font-size: 0.9rem;
-    opacity: 0.8;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+}
+.pengelola-badge:hover {
+    background: rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+}
+.footer-paguyuban-name {
+    font-weight: 600;
+    margin-bottom: 1rem;
     line-height: 1.4;
 }
+.contact-info p {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+.contact-info i { color: var(--kse-gold); width: 16px; text-align: center; }
 
-.footer-cabinet {
-    font-size: 0.85rem;
-    color: var(--kse-gold);
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    margin-top: 0.8rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: inline-block;
+/* Social Icons Premium */
+.premium-socials {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-start;
+}
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.social-link:hover {
+    background: var(--kse-gold);
+    color: var(--kse-blue-dark);
+    transform: translateY(-5px);
+    border-color: var(--kse-gold);
+    box-shadow: 0 10px 15px rgba(251, 191, 36, 0.2);
 }
 
-/* Responsif untuk HP */
-@media (max-width: 480px) {
-    .footer-logos { gap: 1rem; }
-    .logo-paguyuban { height: 50px; }
-    .logo-kabinet { height: 40px; }
+/* Footer Bottom Strip */
+.footer-bottom {
+    text-align: center;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #94a3b8;
 }
 
-/* ===== UPDATE NAVIGASI KSEUNRIPEDIA ===== */
+/* Responsive Grid Footer */
+@media (max-width: 992px) {
+    .premium-footer-grid { grid-template-columns: 1fr 1fr; }
+    .brand-col { grid-column: span 2; }
+}
 
 /* Navigasi & Filter */
 .nav-section {

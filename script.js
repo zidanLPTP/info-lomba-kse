@@ -52,6 +52,22 @@ class InfoLombaApp {
                 this.renderData();
             });
         });
+
+        // Back to Top Listener
+        const backToTopBtn = document.getElementById('backToTop');
+        if (backToTopBtn) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            });
+
+            backToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
     }
 
     async loadData() {
@@ -198,6 +214,7 @@ class InfoLombaApp {
             if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
             if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
             if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
+            if (item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) iconClass = 'fa-user-tie';
 
             return `
             <div class="lomba-card" data-id="${item.id}">
@@ -251,6 +268,7 @@ class InfoLombaApp {
         if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
         if (item.jenis.toLowerCase().includes('magang')) iconClass = 'fa-briefcase';
         if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
+        if (item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) iconClass = 'fa-user-tie';
 
         modalBody.innerHTML = `
             <div style="text-align:center; margin-bottom:1.5rem; color:var(--kse-blue);">
@@ -261,12 +279,12 @@ class InfoLombaApp {
             
             <div class="modal-section">
                 <h5><i class="fas fa-align-left"></i> Deskripsi</h5>
-                <p>${this.escapeHTML(item.deskripsi)}</p>
+                <p style="line-height: 1.8; color: var(--text-main); font-size: 1.05rem;">${this.formatText(item.deskripsi)}</p>
             </div>
             
             <div class="modal-section">
                 <h5><i class="fas fa-star"></i> Benefit / Info</h5>
-                <p>${this.escapeHTML(item.benefit)}</p>
+                <p style="line-height: 1.8; color: var(--text-main); font-size: 1.05rem; background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px dashed var(--kse-blue);">${this.formatText(item.benefit)}</p>
             </div>
             
             <div class="modal-section">
@@ -280,7 +298,9 @@ class InfoLombaApp {
             </div>
             
             ${item.link ? 
-                `<a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; margin-top:1rem; text-align:center; padding:1rem;">Buka Link Pendaftaran/Info</a>` : ''}
+                `<div class="modal-action-wrapper" style="position: sticky; bottom: -2.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); padding: 1.5rem 2.5rem; margin: 2rem -2.5rem -2.5rem -2.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 -10px 20px rgba(0,0,0,0.03);">
+                    <a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; text-align:center; padding:1rem; font-size:1.1rem; box-shadow: 0 10px 15px -3px rgba(0, 51, 102, 0.2);">🚀 Buka Link Info / Pendaftaran</a>
+                </div>` : ''}
         `;
         
         document.getElementById('detailModal').style.display = 'flex';
@@ -294,7 +314,7 @@ class InfoLombaApp {
     }
 
     showLoading(show) {
-        document.getElementById('loadingSpinner').style.display = show ? 'block' : 'none';
+        document.getElementById('loadingSpinner').style.display = show ? 'grid' : 'none';
         document.getElementById('lombaContainer').style.display = show ? 'none' : 'grid';
     }
 
@@ -314,6 +334,7 @@ class InfoLombaApp {
     getStatusText(s) { const t={'open':'Buka','coming':'Segera','closed':'Tutup','unknown':''}; return t[s]||''; }
     formatDate(d) { try{const date=this.parseDate(d); return date?date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):d;}catch(e){return d;} }
     escapeHTML(t) { if(!t)return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+    formatText(t) { return this.escapeHTML(t).replace(/\n/g, '<br>'); }
     debounce(f,w) { let t; return(...a)=>{ clearTimeout(t); t=setTimeout(()=>f.apply(this,a),w); }; }
 }
 document.addEventListener('DOMContentLoaded', () => { window.app = new InfoLombaApp(); });

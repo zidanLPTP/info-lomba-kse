@@ -87,7 +87,8 @@ class InfoLombaApp {
 
 
             console.log("📦 RAW DATA:", data);
-            this.allData = this.processApiData(data);
+            const actualData = Array.isArray(data) ? data : (data.data || []);
+            this.allData = this.processApiData(actualData);
             console.log(` Loaded ${this.allData.length} items`);
             this.renderData();
 

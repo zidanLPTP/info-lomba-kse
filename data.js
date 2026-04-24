@@ -13,81 +13,42 @@ class LombaDataManager {
 
     // Process data dari Google Sheets
     processSheetData(sheetData) {
-        console.log('📊 Processing sheet data:', sheetData);
-        
-        if (!sheetData || !sheetData.values || sheetData.values.length < 2) {
-            console.warn('❌ No data found in sheet');
-            return [];
-        }
+    if (!sheetData || sheetData.length === 0) {
+        console.error("❌ No data found");
+        return [];
+    }
 
-        const headers = sheetData.values[0];
-        const rows = sheetData.values.slice(1);
-        
-        console.log('📋 Headers:', headers);
-        console.log('📝 Rows count:', rows.length);
-
-        const processedData = rows.map((row, index) => {
-            try {
-                const record = {};
-                
-                // Map each column to its header
-                headers.forEach((header, colIndex) => {
-                    record[header] = row[colIndex] || '';
-                });
-
-                // Process and clean the data
-                return this.cleanRecordData(record);
-            } catch (error) {
-                console.error(`❌ Error processing row ${index}:`, error);
-                return null;
-            }
-        }).filter(record => record !== null);
-
-        console.log('✅ Processed data:', processedData);
-        return processedData;
+    return sheetData.map(record => this.cleanRecordData(record));
     }
 
     // Clean and structure record data
     cleanRecordData(record) {
-        const cleaned = {
-            // Basic Info
-            id: this.generateId(),
-            namaLomba: record['Nama Lomba'] || 'Tidak ada nama',
-            kategori: record['Kategori'] || 'Tidak ada kategori',
-            jenisPartisipasi: record['Jenis Partisipasi'] || 'Tidak ada jenis',
-            levelPeserta: record['Tingkat Peserta'] || 'Tidak ada level',
-            
-            // Details
-            penyelenggara: record['Penyelenggara'] || 'Tidak ada penyelenggara',
-            hadiah: record['Hadiah & Penghargaan'] || 'Tidak ada hadiah',
-            biaya: record['Biaya Pendaftaran'] || 'Tidak diketahui',
-            
-            // Dates
-            tanggalMulai: record['Tanggal Mulai Pendaftaran'] || '',
-            deadline: record['Batas Akhir Pendaftaran'] || '',
-            
-            // Contact & Links
-            linkPendaftaran: record['Link Pendaftaran/Resmi'] || '',
-            linkPoster: record['Link Poster/Flyer'] || '',
-            contactPerson: record['Narahubung'] || 'Tidak ada kontak',
-            emailWebsite: record['Email/Website Resmi'] || '',
-            
-            // Additional Info
-            deskripsi: record['Deskripsi Singkat Lomba'] || '',
-            inputBy: record['Nama yang Menginput Data'] || 'Anonim',
-            asalHimpunan: record['Asal Jurusan/Himpunan'] || '',
-            
-            // System Fields
-            statusApproval: record['STATUS_APPROVAL'] || 'PENDING',
-            timestamp: record['Timestamp'] || new Date().toISOString()
+    return {
+        id: record["Timestamp"] || Date.now(),
+
+        namaLomba: record["JUDUL KEGIATAN"] || "Tidak ada",
+        kategori: record["KATEGORI"] || "",
+        bidang: record["BIDANG LOMBA"] || "",
+        jenis: record["JENIS PARTISIPASI"] || "",
+
+        penyelenggara: record["PENYELENGGARA"] || "",
+
+        tanggalMulai: record["TANGGAL MULAI PENDAFTARAN"] || "",
+        deadline: record["DEADLINE PENDAFTARAN"] || "",
+
+        lokasi: record["LOKASI/KATEGORI LOKASI"] || "",
+        level: record["LEVEL PESERTA"] || "",
+
+        biaya: record["BIAYA PENDAFTARAN"] || "",
+        hadiah: record["BENEFIT / HADIAH"] || "",
+
+        link: record["LINK PENDAFTARAN/RESMI"] || "",
+        narahubung: record["NARAHUBUNG"] || "",
+
+        deskripsi: record["DESKRIPSI SINGKAT LOMBA"] || "",
+
+        divisi: record["DIVISI YANG MENGINPUT DATA"] || ""
         };
-
-        // Calculate derived fields
-        cleaned.status = this.calculateStatus(cleaned.tanggalMulai, cleaned.deadline);
-        cleaned.urgency = this.calculateUrgency(cleaned.deadline, cleaned.status);
-        cleaned.simplifiedHadiah = this.simplifyHadiah(cleaned.hadiah);
-
-        return cleaned;
     }
 
     // Calculate status based on dates

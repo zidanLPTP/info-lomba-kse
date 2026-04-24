@@ -1,9 +1,8 @@
 const CONFIG = {
-    // Sheets to API Configuration 
     SHEETS_TO_API: {
-        USER_KEY: '0bef18ec-958a-4d4d-8353-d5de4dcd2e6d',
+        USER_KEY: '4620808b-aa88-43cb-9fe5-25630c2b0c90',
         SHEET_NAME: 'Form Responses 1',
-        BASE_URL: 'https://sheets.livepolls.app/api/spreadsheets'
+        BASE_URL: 'https://sheets.livepolls.app/api/spreadsheets/4620808b-aa88-43cb-9fe5-25630c2b0c90/Form%20Responses%201'
     },
 
     WEBSITE: {

@@ -1,4 +1,3 @@
-
 class LombaDataManager {
     constructor() {
         this.allData = [];

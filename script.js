@@ -85,7 +85,9 @@ class InfoLombaApp {
                 console.log('🔍 HEADER DETECTED:', Object.keys(data.data[0]));
             }
 
-            this.allData = this.processApiData(data.data);
+
+            console.log("📦 RAW DATA:", data);
+            this.allData = this.processApiData(data);
             console.log(` Loaded ${this.allData.length} items`);
             this.renderData();
 
@@ -165,7 +167,9 @@ class InfoLombaApp {
         let filtered = this.allData;
 
         // 1. Filter Status Approved
-        filtered = filtered.filter(item => item.statusApproval.includes('APPROVED'));
+        filtered = filtered.filter(item => 
+            !item.statusApproval || item.statusApproval.includes('APPROVED')
+        );
 
         // 2. Filter Kategori (Tab Menu)
         if (this.currentFilters.category !== 'all') {

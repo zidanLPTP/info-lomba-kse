@@ -6,7 +6,7 @@ class InfoLombaApp {
         this.currentFilters = {
             search: '',
             category: 'all',
-            status: 'all'   
+            status: 'all'
         };
         this.init();
     }
@@ -36,7 +36,7 @@ class InfoLombaApp {
                 const target = e.target.closest('.tab-btn');
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 target.classList.add('active');
-                
+
                 this.currentFilters.category = target.dataset.category;
                 this.renderData();
             });
@@ -47,23 +47,43 @@ class InfoLombaApp {
             btn.addEventListener('click', (e) => {
                 document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
                 e.target.classList.add('active');
-                
+
                 this.currentFilters.status = e.target.dataset.status;
                 this.renderData();
             });
         });
 
-        // Back to Top Listener
+        // Back to Top & Smart Navbar Listener
         const backToTopBtn = document.getElementById('backToTop');
-        if (backToTopBtn) {
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
+        const navSection = document.querySelector('.nav-section');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+
+            // Back to Top
+            if (backToTopBtn) {
+                if (currentScrollY > 300) {
                     backToTopBtn.classList.add('show');
                 } else {
                     backToTopBtn.classList.remove('show');
                 }
-            });
+            }
 
+            // Smart Navbar (Hide on scroll down, show on scroll up)
+            if (navSection) {
+                if (currentScrollY > lastScrollY && currentScrollY > 150) {
+                    // Scroll Down - Hide
+                    navSection.classList.add('nav-hidden');
+                } else {
+                    // Scroll Up - Show
+                    navSection.classList.remove('nav-hidden');
+                }
+            }
+            lastScrollY = currentScrollY;
+        });
+
+        if (backToTopBtn) {
             backToTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
@@ -74,12 +94,12 @@ class InfoLombaApp {
         try {
             this.showLoading(true);
             const apiUrl = `${CONFIG.SHEETS_TO_API.BASE_URL}/${CONFIG.SHEETS_TO_API.USER_KEY}/${encodeURIComponent(CONFIG.SHEETS_TO_API.SHEET_NAME)}`;
-            
+
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
+
             const data = await response.json();
-            
+
             // Diagnostik Header
             if (data.data && data.data.length > 0) {
                 console.log('🔍 HEADER DETECTED:', Object.keys(data.data[0]));
@@ -109,7 +129,7 @@ class InfoLombaApp {
 
     processApiData(apiData) {
         if (!Array.isArray(apiData)) return [];
-        
+
         return apiData.map((record) => {
             const clean = (key, fallback) => {
                 const val = this.findValueByKey(record, key);
@@ -125,12 +145,12 @@ class InfoLombaApp {
             // Prioritas: JUDUL KEGIATAN -> Fallback: NAMA LOMBA
             const judul = clean('JUDUL KEGIATAN', clean('NAMA LOMBA', null));
             const penyelenggara = clean('PENYELENGGARA', null);
-            
+
             if (!judul || !penyelenggara) return null;
 
             // Ambil Jenis Informasi (Lomba/Beasiswa/dll)
             // Default ke 'Lomba' jika kolom ini belum diisi di sheet lama
-            let jenisInfo = clean('JENIS INFORMASI', 'Lomba'); 
+            let jenisInfo = clean('JENIS INFORMASI', 'Lomba');
 
             // Mapping Benefit
             let benefit = clean('BENEFIT / HADIAH', clean('HADIAH & PENGHARGAAN', 'Lihat detail'));
@@ -142,18 +162,18 @@ class InfoLombaApp {
                 judul: judul,
                 jenis: jenisInfo, // Ini kunci utamanya
                 penyelenggara: penyelenggara,
-                
+
                 benefit: benefit,
                 biaya: clean('BIAYA PENDAFTARAN', 'Gratis'),
                 bidang: clean('BIDANG LOMBA', 'Umum'),
-                
+
                 tanggalMulai: clean('TANGGAL MULAI PENDAFTARAN', ''),
                 deadline: clean('DEADLINE PENDAFTARAN', ''),
-                
+
                 link: clean('LINK PENDAFTARAN/RESMI', ''),
                 kontak: clean('NARAHUBUNG', '-'),
                 deskripsi: clean('DESKRIPSI SINGKAT LOMBA', 'Tidak ada deskripsi.'),
-                
+
                 statusApproval: rawStatus.toString().toUpperCase().trim()
             };
 
@@ -168,13 +188,13 @@ class InfoLombaApp {
         let filtered = this.allData;
 
         // 1. Filter Status Approved
-        filtered = filtered.filter(item => 
+        filtered = filtered.filter(item =>
             !item.statusApproval || item.statusApproval.includes('APPROVED')
         );
 
         // 2. Filter Kategori (Tab Menu)
         if (this.currentFilters.category !== 'all') {
-            filtered = filtered.filter(item => 
+            filtered = filtered.filter(item =>
                 item.jenis.toLowerCase().includes(this.currentFilters.category.toLowerCase())
             );
         }
@@ -182,7 +202,7 @@ class InfoLombaApp {
         // 3. Filter Search
         if (this.currentFilters.search) {
             const term = this.currentFilters.search.toLowerCase();
-            filtered = filtered.filter(item => 
+            filtered = filtered.filter(item =>
                 item.judul.toLowerCase().includes(term) ||
                 item.penyelenggara.toLowerCase().includes(term) ||
                 item.jenis.toLowerCase().includes(term)
@@ -238,7 +258,7 @@ class InfoLombaApp {
                     <p class="organizer"><i class="fas fa-building"></i> ${this.escapeHTML(item.penyelenggara)}</p>
                     
                     <div class="info-row">
-                        <span class="info-tag"><i class="fas fa-gift"></i> ${this.escapeHTML(item.benefit).substring(0,30)}...</span>
+                        <span class="info-tag"><i class="fas fa-gift"></i> ${this.escapeHTML(item.benefit).substring(0, 30)}...</span>
                         <span class="info-tag"><i class="fas fa-tag"></i> ${this.escapeHTML(item.biaya)}</span>
                     </div>
                     
@@ -250,10 +270,10 @@ class InfoLombaApp {
                     </div>
                     
                     <div class="card-actions">
-                        ${item.link ? 
-                            `<a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary">Buka Link</a>` :
-                            `<button class="btn-primary" disabled>Link -</button>`
-                        }
+                        ${item.link ?
+                    `<a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary">Buka Link</a>` :
+                    `<button class="btn-primary" disabled>Link -</button>`
+                }
                         <button class="btn-secondary" onclick="app.showDetail('${item.id}')">Detail</button>
                     </div>
                 </div> 
@@ -267,7 +287,7 @@ class InfoLombaApp {
         if (!item) return;
 
         const modalBody = document.getElementById('modalBody');
-        
+
         // Ikon Besar
         let iconClass = 'fa-trophy';
         if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
@@ -302,12 +322,12 @@ class InfoLombaApp {
                 </ul>
             </div>
             
-            ${item.link ? 
+            ${item.link ?
                 `<div class="modal-action-wrapper" style="position: sticky; bottom: -2.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); padding: 1.5rem 2.5rem; margin: 2rem -2.5rem -2.5rem -2.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 -10px 20px rgba(0,0,0,0.03);">
                     <a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; text-align:center; padding:1rem; font-size:1.1rem; box-shadow: 0 10px 15px -3px rgba(0, 51, 102, 0.2);">🚀 Buka Link Info / Pendaftaran</a>
                 </div>` : ''}
         `;
-        
+
         document.getElementById('detailModal').style.display = 'flex';
         setTimeout(() => document.getElementById('detailModal').classList.add('show'), 10);
     }
@@ -329,17 +349,18 @@ class InfoLombaApp {
     }
 
     // Helpers
-    parseDate(d) { if(!d)return null; const p=d.split('/'); if(p.length===3)return new Date(`${p[2]}-${p[1]}-${p[0]}`); return new Date(d); }
-    calculateStatus(s, e) { const now=new Date(); const end=this.parseDate(e); if(!end)return 'unknown'; if(now>end)return 'closed'; const start=this.parseDate(s); if(start&&now<start)return 'coming'; return 'open'; }
-    calculateUrgency(d, s) { if(s!=='open'||!d)return null; const now=new Date(); const end=this.parseDate(d); if(!end)return null; const days=Math.ceil((end-now)/8.64e7); 
-        if(days<=0)return {badge:"HARI INI TERAKHIR!",class:"urgent-critical"};
-        if(days<=3)return {badge:`${days} HARI LAGI`,class:"urgent"};
+    parseDate(d) { if (!d) return null; const p = d.split('/'); if (p.length === 3) return new Date(`${p[2]}-${p[1]}-${p[0]}`); return new Date(d); }
+    calculateStatus(s, e) { const now = new Date(); const end = this.parseDate(e); if (!end) return 'unknown'; if (now > end) return 'closed'; const start = this.parseDate(s); if (start && now < start) return 'coming'; return 'open'; }
+    calculateUrgency(d, s) {
+        if (s !== 'open' || !d) return null; const now = new Date(); const end = this.parseDate(d); if (!end) return null; const days = Math.ceil((end - now) / 8.64e7);
+        if (days <= 0) return { badge: "HARI INI TERAKHIR!", class: "urgent-critical" };
+        if (days <= 3) return { badge: `${days} HARI LAGI`, class: "urgent" };
         return null;
     }
-    getStatusText(s) { const t={'open':'Buka','coming':'Segera','closed':'Tutup','unknown':''}; return t[s]||''; }
-    formatDate(d) { try{const date=this.parseDate(d); return date?date.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):d;}catch(e){return d;} }
-    escapeHTML(t) { if(!t)return ''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+    getStatusText(s) { const t = { 'open': 'Buka', 'coming': 'Segera', 'closed': 'Tutup', 'unknown': '' }; return t[s] || ''; }
+    formatDate(d) { try { const date = this.parseDate(d); return date ? date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : d; } catch (e) { return d; } }
+    escapeHTML(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
     formatText(t) { return this.escapeHTML(t).replace(/\n/g, '<br>'); }
-    debounce(f,w) { let t; return(...a)=>{ clearTimeout(t); t=setTimeout(()=>f.apply(this,a),w); }; }
+    debounce(f, w) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => f.apply(this, a), w); }; }
 }
 document.addEventListener('DOMContentLoaded', () => { window.app = new InfoLombaApp(); });

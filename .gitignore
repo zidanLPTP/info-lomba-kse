@@ -1,4 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Environment Variables & Credentials
+.env
 credentials.json
-scraper_kabarlomba.py
-scraper_history.json
-scraper.log
+py/credentials.json
+
+# Logs & Temporary Data
+*.log
+py/*.log
+py/scraper_history.json
+py/form_data.txt
+
+# Private Python Scripts (Based on previous config)
+py/scraper_kabarlomba.py
+py/check_form.py
+py/parse_form.py
+py/test_payload.py
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

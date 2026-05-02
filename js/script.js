@@ -13,7 +13,7 @@ class InfoLombaApp {
 
     async init() {
         try {
-            console.log('🚀 Initializing KSEUNRIPEDIA...');
+            console.log(' Initializing KSEUNRIPEDIA...');
             this.initEventListeners();
             await this.loadData();
             this.isInitialized = true;
@@ -143,7 +143,7 @@ class InfoLombaApp {
 
             // MAPPING DATA GFORM BARU
             // Prioritas: JUDUL KEGIATAN -> Fallback: NAMA LOMBA
-            const judul = clean('JUDUL KEGIATAN', clean('NAMA LOMBA', null));
+            let judul = clean('JUDUL KEGIATAN', clean('NAMA LOMBA', null));
             const penyelenggara = clean('PENYELENGGARA', null);
 
             if (!judul || !penyelenggara) return null;
@@ -194,9 +194,17 @@ class InfoLombaApp {
 
         // 2. Filter Kategori (Tab Menu)
         if (this.currentFilters.category !== 'all') {
-            filtered = filtered.filter(item =>
-                item.jenis.toLowerCase().includes(this.currentFilters.category.toLowerCase())
-            );
+            if (this.currentFilters.category === 'Karir') {
+                filtered = filtered.filter(item =>
+                    item.jenis.toLowerCase().includes('magang') ||
+                    item.jenis.toLowerCase().includes('loker') ||
+                    item.jenis.toLowerCase().includes('lowongan')
+                );
+            } else {
+                filtered = filtered.filter(item =>
+                    item.jenis.toLowerCase().includes(this.currentFilters.category.toLowerCase())
+                );
+            }
         }
 
         // 3. Filter Search
@@ -241,8 +249,30 @@ class InfoLombaApp {
             if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
             if (item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) iconClass = 'fa-user-tie';
 
+            // Dinamis Label
+            let labelPenyelenggara = "Penyelenggara";
+            let labelBiaya = "Biaya";
+            let iconPenyelenggara = "fa-building";
+            let iconBiaya = "fa-tag";
+            let cardCustomClass = "";
+
+            if (item.jenis.toLowerCase().includes('magang')) {
+                labelPenyelenggara = "Perusahaan";
+                labelBiaya = "Uang Saku";
+                iconBiaya = "fa-money-bill-wave";
+                cardCustomClass = "card-magang";
+            } else if (item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) {
+                labelPenyelenggara = "Perusahaan";
+                labelBiaya = "Gaji";
+                iconBiaya = "fa-money-bill-wave";
+                cardCustomClass = "card-loker";
+            } else if (item.jenis.toLowerCase().includes('seminar')) {
+                labelBiaya = "HTM";
+                cardCustomClass = "card-seminar";
+            }
+
             return `
-            <div class="lomba-card" data-id="${item.id}">
+            <div class="lomba-card ${cardCustomClass}" data-id="${item.id}">
                 <div class="card-content"> 
                     <div class="card-header">
                         <span class="category-badge">
@@ -255,11 +285,11 @@ class InfoLombaApp {
                     
                     <h3 class="card-title">${this.escapeHTML(item.judul)}</h3>
                     
-                    <p class="organizer"><i class="fas fa-building"></i> ${this.escapeHTML(item.penyelenggara)}</p>
+                    <p class="organizer"><i class="fas ${iconPenyelenggara}"></i> <span style="font-size:0.8rem; opacity:0.8; margin-right:4px;">${labelPenyelenggara}:</span> ${this.escapeHTML(item.penyelenggara)}</p>
                     
                     <div class="info-row">
-                        <span class="info-tag"><i class="fas fa-gift"></i> ${this.escapeHTML(item.benefit).substring(0, 30)}...</span>
-                        <span class="info-tag"><i class="fas fa-tag"></i> ${this.escapeHTML(item.biaya)}</span>
+                        <span class="info-tag" title="Benefit"><i class="fas fa-gift"></i> ${this.escapeHTML(item.benefit).substring(0, 30)}...</span>
+                        <span class="info-tag" title="${labelBiaya}"><i class="fas ${iconBiaya}"></i> ${this.escapeHTML(item.biaya)}</span>
                     </div>
                     
                     ${item.urgency ? `<div class="urgency-bar ${item.urgency.class}">${item.urgency.badge}</div>` : ''}
@@ -295,6 +325,18 @@ class InfoLombaApp {
         if (item.jenis.toLowerCase().includes('seminar')) iconClass = 'fa-microphone';
         if (item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) iconClass = 'fa-user-tie';
 
+        // Dinamis Label untuk Modal
+        let labelPenyelenggara = "Penyelenggara";
+        let labelBiaya = "Biaya";
+        let iconBiaya = "fa-money-bill-wave";
+
+        if (item.jenis.toLowerCase().includes('magang') || item.jenis.toLowerCase().includes('loker') || item.jenis.toLowerCase().includes('lowongan')) {
+            labelPenyelenggara = "Perusahaan";
+            labelBiaya = "Sistem Gaji / Status";
+        } else if (item.jenis.toLowerCase().includes('seminar')) {
+            labelBiaya = "HTM (Harga Tiket Masuk)";
+        }
+
         modalBody.innerHTML = `
             <div style="text-align:center; margin-bottom:1.5rem; color:var(--kse-blue);">
                 <i class="fas ${iconClass}" style="font-size:3rem; margin-bottom:1rem;"></i>
@@ -303,7 +345,7 @@ class InfoLombaApp {
             </div>
             
             <div class="modal-section">
-                <h5><i class="fas fa-align-left"></i> Deskripsi</h5>
+                <h5><i class="fas fa-align-left"></i> Deskripsi / Syarat</h5>
                 <p style="line-height: 1.8; color: var(--text-main); font-size: 1.05rem;">${this.formatText(item.deskripsi)}</p>
             </div>
             
@@ -315,8 +357,8 @@ class InfoLombaApp {
             <div class="modal-section">
                 <h5><i class="fas fa-info-circle"></i> Detail Lainnya</h5>
                 <ul>
-                    <li><i class="fas fa-building"></i> Penyelenggara: ${this.escapeHTML(item.penyelenggara)}</li>
-                    <li><i class="fas fa-money-bill-wave"></i> Biaya: ${this.escapeHTML(item.biaya)}</li>
+                    <li><i class="fas fa-building"></i> ${labelPenyelenggara}: ${this.escapeHTML(item.penyelenggara)}</li>
+                    <li><i class="fas ${iconBiaya}"></i> ${labelBiaya}: ${this.escapeHTML(item.biaya)}</li>
                     <li><i class="fas fa-calendar-alt"></i> Deadline: ${this.formatDate(item.deadline)}</li>
                     <li><i class="fas fa-user"></i> Kontak: ${this.escapeHTML(item.kontak)}</li>
                 </ul>

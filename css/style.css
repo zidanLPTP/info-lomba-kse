@@ -1061,6 +1061,42 @@ body {
     border: 1px solid #fecaca;
 }
 
+/* Warna khusus untuk Magang */
+.lomba-card.card-magang {
+    border-top: 4px solid #10b981; /* Emerald/Hijau */
+}
+.lomba-card.card-magang::before {
+    display: none; /* Hilangkan gradient default */
+}
+.lomba-card.card-magang .category-badge {
+    background: #d1fae5;
+    color: #047857;
+}
+
+/* Warna khusus untuk Loker / Lowongan Kerja */
+.lomba-card.card-loker {
+    border-top: 4px solid #1e3a8a; /* Navy Blue */
+}
+.lomba-card.card-loker::before {
+    display: none; /* Hilangkan gradient default */
+}
+.lomba-card.card-loker .category-badge {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+/* Warna khusus untuk Seminar (Amber/Orange) */
+.lomba-card.card-seminar {
+    border-top: 4px solid #f59e0b; /* Amber */
+}
+.lomba-card.card-seminar::before {
+    display: none; /* Hilangkan gradient default */
+}
+.lomba-card.card-seminar .category-badge {
+    background: #fef3c7;
+    color: #b45309;
+}
+
 /* =========================================
    PERBAIKAN TAMPILAN MOBILE (NAVIGASI)
    ========================================= */

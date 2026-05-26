@@ -366,7 +366,7 @@ class InfoLombaApp {
             
             ${item.link ?
                 `<div class="modal-action-wrapper" style="position: sticky; bottom: -2.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); padding: 1.5rem 2.5rem; margin: 2rem -2.5rem -2.5rem -2.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 -10px 20px rgba(0,0,0,0.03);">
-                    <a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; text-align:center; padding:1rem; font-size:1.1rem; box-shadow: 0 10px 15px -3px rgba(0, 51, 102, 0.2);">🚀 Buka Link Info / Pendaftaran</a>
+                    <a href="${this.escapeHTML(item.link)}" target="_blank" class="btn-primary" style="width:100%; display:block; text-align:center; padding:1rem; font-size:1.1rem; box-shadow: 0 10px 15px -3px rgba(0, 51, 102, 0.2);"> Buka Link Info / Pendaftaran</a>
                 </div>` : ''}
         `;
 

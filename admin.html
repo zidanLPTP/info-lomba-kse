@@ -5,382 +5,354 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KSE Admin - Parser Otomatis</title>
+
+    <link rel="icon" type="image/png" href="assets/logo-kabinet.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
-        }
-
-        .admin-header {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            color: white;
-            padding: 2.5rem 0;
-            margin-bottom: 2rem;
-            border-bottom-left-radius: 24px;
-            border-bottom-right-radius: 24px;
-            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.2);
-        }
-
-        .card {
-            border: none;
-            border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-            margin-bottom: 2rem;
-        }
-
-        .card-header {
-            background: white;
-            border-bottom: 1px solid #f1f5f9;
-            font-weight: 700;
-            color: #1e40af;
-            border-radius: 16px 16px 0 0 !important;
-            padding: 1.25rem 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        .form-control,
-        .form-select {
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            padding: 0.6rem 1rem;
-            font-size: 0.95rem;
-            background-color: #f8fafc;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-            background-color: white;
-        }
-
-        .btn-kse {
-            background: #1e40af;
-            color: white;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 0.8rem 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .btn-kse:hover {
-            background: #1e3a8a;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(30, 64, 175, 0.2);
-        }
-
-        .btn-gold {
-            background: #fbbf24;
-            color: #92400e;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 0.8rem 1.5rem;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .btn-gold:hover {
-            background: #f59e0b;
-            color: #78350f;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(245, 158, 11, 0.25);
-        }
-
-        .form-label {
-            font-size: 0.9rem;
-            color: #64748b;
-            margin-bottom: 0.4rem;
-            font-weight: 600;
-        }
-
-        .radio-group-modern {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .radio-modern-label {
-            cursor: pointer;
-            padding: 0.6rem 1.2rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #64748b;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-        }
-
-        .radio-modern-input:checked+.radio-modern-label {
-            background-color: #eff6ff;
-            border-color: #3b82f6;
-            color: #1d4ed8;
-            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.1);
-        }
-
-        .radio-modern-input {
-            display: none;
-        }
-
-        .section-badge {
-            background: #e0e7ff;
-            color: #4338ca;
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: inline-block;
-        }
-    </style>
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/admin.css" rel="stylesheet">
 </head>
 
 <body>
 
-    <header class="admin-header text-center px-3">
-        <h2 class="fw-bold mb-2"><i class="fas fa-magic me-2"></i>KSE Auto-Parser</h2>
-        <p class="mb-0 opacity-75">Ekstrak otomatis teks informasi Karir, Seminar, dan Lomba ke Database</p>
-    </header>
-
-    <div class="container pb-5">
-        <div class="row g-4">
-            <!-- Kolom Input Raw Text -->
-            <div class="col-lg-5">
-                <div class="card h-100">
-                    <div class="card-header d-flex align-items-center">
-                        <i class="fas fa-paste text-warning me-2"></i>Input Deskripsi
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-4">
-                            <label class="form-label text-dark">Pilih Jenis Informasi:</label>
-                            <div class="radio-group-modern">
-                                <div>
-                                    <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catMagang"
-                                        value="Magang" checked>
-                                    <label class="radio-modern-label" for="catMagang"><i class="fas fa-briefcase"></i>
-                                        Magang</label>
-                                </div>
-                                <div>
-                                    <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catLoker"
-                                        value="Lowongan Kerja">
-                                    <label class="radio-modern-label" for="catLoker"><i class="fas fa-user-tie"></i>
-                                        Lowongan Kerja</label>
-                                </div>
-                                <div>
-                                    <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catSeminar"
-                                        value="Seminar">
-                                    <label class="radio-modern-label" for="catSeminar"><i
-                                            class="fas fa-chalkboard-teacher"></i> Seminar</label>
-                                </div>
-                                <div>
-                                    <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catLomba"
-                                        value="Lomba">
-                                    <label class="radio-modern-label" for="catLomba"><i class="fas fa-trophy"></i>
-                                        Lomba</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="form-label text-dark">Teks Mentah (Paste dari WA/IG):</label>
-                            <textarea id="rawText" class="form-control" rows="12"
-                                placeholder="Tempelkan caption Instagram atau broadcast WhatsApp di sini..."></textarea>
-                        </div>
-
-                        <button id="btnEksekusi" class="btn btn-gold w-100 py-3"><i class="fas fa-bolt me-2"></i>
-                            Eksekusi & Ekstrak Data</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kolom Preview & Edit -->
-            <div class="col-lg-7">
-                <div class="card h-100">
-                    <div class="card-header d-flex align-items-center">
-                        <i class="fas fa-eye text-primary me-2"></i>Preview & Edit Data
-                    </div>
-                    <div class="card-body">
-
-                        <form id="submissionForm">
-
-                            <!-- Kategori Hidden (Akan diisi JS secara otomatis) -->
-                            <input type="hidden" id="entryJenis" name="entry.558548208" value="">
-                            <!-- Status Default DIKLAT -->
-                            <input type="hidden" name="entry.452725760" id="entryStatus" value="DIKLAT">
-
-                            <div class="section-badge"><i class="fas fa-info-circle me-1"></i> Informasi Utama</div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label class="form-label" id="labelJudul">Judul Kegiatan / Posisi <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" id="entryJudul" name="entry.149191259" class="form-control"
-                                        required>
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label" id="labelPenyelenggara">Penyelenggara / Perusahaan <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" id="entryPenyelenggara" name="entry.938214674"
-                                        class="form-control" required>
-                                </div>
-                                <div class="col-md-6" id="benefitContainer">
-                                    <label class="form-label" id="labelBenefit">Benefit / Gaji</label>
-                                    <input type="text" id="entryBenefit" name="entry.375282935" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6">
-                                    <label class="form-label">Tanggal Mulai Pendaftaran</label>
-                                    <input type="date" id="entryMulai" name="entry.857819101" class="form-control">
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label">Deadline Pendaftaran</label>
-                                    <input type="date" id="entryDeadline" name="entry.1588948129" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-6" id="biayaContainer" style="display: none;">
-                                    <label class="form-label" id="labelBiaya">Biaya Pendaftaran</label>
-                                    <select id="entryBiaya" name="entry.728063400" class="form-select">
-                                        <option value="Gratis">Gratis</option>
-                                        <option value="Berbayar">Berbayar</option>
-                                        <option value="Ada biaya administrasi">Ada biaya administrasi</option>
-                                    </select>
-                                </div>
-                                <!-- Hidden select for Biaya when Gratis for Loker/Magang -->
-                                <div class="d-none" id="hiddenBiayaContainer">
-                                    <select id="hiddenEntryBiaya" class="form-select">
-                                        <option value="Gratis" selected>Gratis</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">Narahubung (WA/Email)</label>
-                                    <input type="text" id="entryKontak" name="entry.281271846" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row mb-3">
-                                <div class="col-md-12">
-                                    <label class="form-label">Link Pendaftaran / Info Lain</label>
-                                    <input type="text" id="entryLink" name="entry.1370160351" class="form-control">
-                                </div>
-                            </div>
-
-                            <div class="row mb-4">
-                                <div class="col-md-12">
-                                    <label class="form-label">Deskripsi / Syarat</label>
-                                    <textarea id="entryDeskripsi" name="entry.2045657726" class="form-control"
-                                        rows="3"></textarea>
-                                </div>
-                            </div>
-
-                            <!-- Info Spesifik Lomba -->
-                            <div id="lombaFieldsRow"
-                                style="display: none; background: #f8fafc; border: 1px dashed #cbd5e1; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                                <div class="section-badge mb-3 bg-white border"><i class="fas fa-tags me-1"></i> Detail
-                                    Khusus Lomba</div>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Kategori</label>
-                                        <select id="entryKategori" name="entry.978408814"
-                                            class="form-select form-select-sm">
-                                            <option value="Nasional">Nasional</option>
-                                            <option value="Internasional">Internasional</option>
-                                            <option value="Regional">Regional</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Bidang</label>
-                                        <select id="entryBidang" name="entry.205610016"
-                                            class="form-select form-select-sm">
-                                            <option value="Akademik & Bahasa">Akademik & Bahasa</option>
-                                            <option value="Teknologi & Digital">Teknologi & Digital</option>
-                                            <option value="Seni & Budaya">Seni & Budaya</option>
-                                            <option value="Bisnis & Kewirausahaan" selected>Bisnis & Kewirausahaan
-                                            </option>
-                                            <option value="Bela Diri & Olahraga">Bela Diri & Olahraga</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Partisipasi</label>
-                                        <select id="entryPartisipasi" name="entry.2100638323"
-                                            class="form-select form-select-sm">
-                                            <option value="Individu">Individu</option>
-                                            <option value="Kelompok/Tim">Kelompok/Tim</option>
-                                            <option value="Keduanya">Keduanya</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label class="form-label">Pelaksanaan</label>
-                                        <select id="entryPelaksanaan" name="entry.328875203"
-                                            class="form-select form-select-sm">
-                                            <option value="Online">Online</option>
-                                            <option value="Offline">Offline</option>
-                                            <option value="Hybrid">Hybrid</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-8 mb-3">
-                                        <label class="form-label">Level Peserta</label>
-                                        <select id="entryLevel" name="entry.663970367"
-                                            class="form-select form-select-sm">
-                                            <option value="Mahasiswa D3/D4/S1">Mahasiswa D3/D4/S1</option>
-                                            <option value="SMA/Sederajat">SMA/Sederajat</option>
-                                            <option value="Mahasiswa S2/S3">Mahasiswa S2/S3</option>
-                                            <option value="Umum">Umum</option>
-                                            <option value="Professional">Professional</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Hidden Selects untuk mencegah Error Form 400 saat bukan Lomba (nilai wajib dikirim meski tidak terlihat) -->
-                            <div id="hiddenLombaFields" class="d-none">
-                                <select id="hiddenEntryKategori">
-                                    <option value="Nasional" selected></option>
-                                </select>
-                                <select id="hiddenEntryBidang">
-                                    <option value="Bisnis & Kewirausahaan" selected></option>
-                                </select>
-                                <select id="hiddenEntryPartisipasi">
-                                    <option value="Individu" selected></option>
-                                </select>
-                                <select id="hiddenEntryPelaksanaan">
-                                    <option value="Online" selected></option>
-                                </select>
-                                <select id="hiddenEntryLevel">
-                                    <option value="Mahasiswa D3/D4/S1" selected></option>
-                                </select>
-                            </div>
-
-                            <button type="submit" id="btnSubmitForm" class="btn btn-kse w-100 py-3 fs-6"><i
-                                    class="fas fa-paper-plane me-2"></i> Kirim ke Database KSE</button>
-                        </form>
+    <header class="main-header">
+        <div class="header-overlay">
+            <div class="container">
+                <div class="header-content">
+                    <div class="header-text">
+                        <h1 class="brand">KSEUNRIPEDIA ADMIN</h1>
+                        <p class="tagline">Auto-Parser & Database Entry Portal</p>
                     </div>
                 </div>
             </div>
         </div>
+    </header>
+
+    <section class="admin-section">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Kolom Input Raw Text -->
+                <div class="col-lg-5">
+                    <div class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <i class="fas fa-paste text-warning"></i> Input Deskripsi Informasi
+                        </div>
+                        <div class="admin-card-body">
+                            <div class="mb-4">
+                                <label class="form-label text-dark">Pilih Jenis Informasi:</label>
+                                <div class="radio-group-modern">
+                                    <div>
+                                        <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catMagang"
+                                            value="Magang" checked>
+                                        <label class="radio-modern-label" for="catMagang"><i class="fas fa-briefcase"></i>
+                                            Magang</label>
+                                    </div>
+                                    <div>
+                                        <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catLoker"
+                                            value="Lowongan Kerja">
+                                        <label class="radio-modern-label" for="catLoker"><i class="fas fa-user-tie"></i>
+                                            Loker</label>
+                                    </div>
+                                    <div>
+                                        <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catSeminar"
+                                            value="Seminar">
+                                        <label class="radio-modern-label" for="catSeminar"><i
+                                                class="fas fa-chalkboard-teacher"></i> Seminar</label>
+                                    </div>
+                                    <div>
+                                        <input class="radio-modern-input" type="radio" name="kategoriInfo" id="catLomba"
+                                            value="Lomba">
+                                        <label class="radio-modern-label" for="catLomba"><i class="fas fa-trophy"></i>
+                                            Lomba</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label text-dark">Teks Mentah (Paste dari WA/IG):</label>
+                                <textarea id="rawText" class="form-control" rows="12"
+                                    placeholder="Tempelkan caption Instagram atau broadcast WhatsApp di sini..."></textarea>
+                            </div>
+
+                            <button id="btnEksekusi" class="btn-eksekusi w-100"><i class="fas fa-bolt"></i>
+                                Eksekusi & Ekstrak Data</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kolom Preview & Edit -->
+                <div class="col-lg-7">
+                    <div class="admin-card h-100">
+                        <div class="admin-card-header">
+                            <i class="fas fa-eye text-primary"></i> Preview & Edit Data Hasil Ekstraksi
+                        </div>
+                        <div class="admin-card-body">
+
+                            <form id="submissionForm">
+
+                                <!-- Kategori Hidden (Akan diisi JS secara otomatis) -->
+                                <input type="hidden" id="entryJenis" name="entry.558548208" value="">
+                                <!-- Status Default DIKLAT -->
+                                <input type="hidden" name="entry.452725760" id="entryStatus" value="DIKLAT">
+
+                                <div class="section-badge"><i class="fas fa-info-circle"></i> Informasi Utama</div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label" id="labelJudul">Judul Kegiatan / Posisi <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="entryJudul" name="entry.149191259" class="form-control"
+                                            required>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label" id="labelPenyelenggara">Penyelenggara / Perusahaan <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="entryPenyelenggara" name="entry.938214674"
+                                            class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6" id="benefitContainer">
+                                        <label class="form-label" id="labelBenefit">Benefit / Gaji</label>
+                                        <input type="text" id="entryBenefit" name="entry.375282935" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tanggal Mulai Pendaftaran</label>
+                                        <input type="date" id="entryMulai" name="entry.857819101" class="form-control">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Deadline Pendaftaran</label>
+                                        <input type="date" id="entryDeadline" name="entry.1588948129" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-6" id="biayaContainer" style="display: none;">
+                                        <label class="form-label" id="labelBiaya">Biaya Pendaftaran</label>
+                                        <select id="entryBiaya" name="entry.728063400" class="form-select">
+                                            <option value="Gratis">Gratis</option>
+                                            <option value="Berbayar">Berbayar</option>
+                                            <option value="Ada biaya administrasi">Ada biaya administrasi</option>
+                                        </select>
+                                    </div>
+                                    <!-- Hidden select for Biaya when Gratis for Loker/Magang -->
+                                    <div class="d-none" id="hiddenBiayaContainer">
+                                        <select id="hiddenEntryBiaya" class="form-select">
+                                            <option value="Gratis" selected>Gratis</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label">Narahubung (WA/Email)</label>
+                                        <input type="text" id="entryKontak" name="entry.281271846" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Link Pendaftaran / Info Lain</label>
+                                        <input type="text" id="entryLink" name="entry.1370160351" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Deskripsi / Syarat</label>
+                                        <textarea id="entryDeskripsi" name="entry.2045657726" class="form-control"
+                                            rows="3"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Info Spesifik Lomba -->
+                                <div id="lombaFieldsRow" style="display: none;">
+                                    <div class="section-badge mb-3"><i class="fas fa-tags"></i> Detail Khusus Lomba</div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Kategori</label>
+                                            <select id="entryKategori" name="entry.978408814"
+                                                class="form-select form-select-sm">
+                                                <option value="Nasional">Nasional</option>
+                                                <option value="Internasional">Internasional</option>
+                                                <option value="Regional">Regional</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Bidang</label>
+                                            <select id="entryBidang" name="entry.205610016"
+                                                class="form-select form-select-sm">
+                                                <option value="Akademik & Bahasa">Akademik & Bahasa</option>
+                                                <option value="Teknologi & Digital">Teknologi & Digital</option>
+                                                <option value="Seni & Budaya">Seni & Budaya</option>
+                                                <option value="Bisnis & Kewirausahaan" selected>Bisnis & Kewirausahaan
+                                                </option>
+                                                <option value="Bela Diri & Olahraga">Bela Diri & Olahraga</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Partisipasi</label>
+                                            <select id="entryPartisipasi" name="entry.2100638323"
+                                                class="form-select form-select-sm">
+                                                <option value="Individu">Individu</option>
+                                                <option value="Kelompok/Tim">Kelompok/Tim</option>
+                                                <option value="Keduanya">Keduanya</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Pelaksanaan</label>
+                                            <select id="entryPelaksanaan" name="entry.328875203"
+                                                class="form-select form-select-sm">
+                                                <option value="Online">Online</option>
+                                                <option value="Offline">Offline</option>
+                                                <option value="Hybrid">Hybrid</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-8 mb-3">
+                                            <label class="form-label">Level Peserta</label>
+                                            <select id="entryLevel" name="entry.663970367"
+                                                class="form-select form-select-sm">
+                                                <option value="Mahasiswa D3/D4/S1">Mahasiswa D3/D4/S1</option>
+                                                <option value="SMA/Sederajat">SMA/Sederajat</option>
+                                                <option value="Mahasiswa S2/S3">Mahasiswa S2/S3</option>
+                                                <option value="Umum">Umum</option>
+                                                <option value="Professional">Professional</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden Selects untuk mencegah Error Form 400 saat bukan Lomba -->
+                                <div id="hiddenLombaFields" class="d-none">
+                                    <select id="hiddenEntryKategori">
+                                        <option value="Nasional" selected></option>
+                                    </select>
+                                    <select id="hiddenEntryBidang">
+                                        <option value="Bisnis & Kewirausahaan" selected></option>
+                                    </select>
+                                    <select id="hiddenEntryPartisipasi">
+                                        <option value="Individu" selected></option>
+                                    </select>
+                                    <select id="hiddenEntryPelaksanaan">
+                                        <option value="Online" selected></option>
+                                    </select>
+                                    <select id="hiddenEntryLevel">
+                                        <option value="Mahasiswa D3/D4/S1" selected></option>
+                                    </select>
+                                </div>
+
+                                <button type="submit" id="btnSubmitForm" class="btn-submit-kse w-100"><i
+                                        class="fas fa-paper-plane"></i> Kirim ke Database KSE</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SVG WAVE DIVIDER -->
+    <div class="footer-wave-container">
+        <svg class="footer-wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <!-- Background dark blue -->
+            <path fill="var(--kse-blue-dark)" fill-opacity="1"
+                d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z">
+            </path>
+            <!-- Gold Outline Wave -->
+            <path fill="none" stroke="var(--kse-gold)" stroke-width="5"
+                d="M0,192L48,176C96,160,192,128,288,138.7C384,149,480,203,576,213.3C672,224,768,192,864,170.7C960,149,1056,139,1152,149.3C1248,160,1344,192,1392,208L1440,224">
+            </path>
+        </svg>
     </div>
 
+    <footer class="main-footer premium-footer">
+        <div class="container premium-footer-grid">
+
+            <!-- Kolom 1: Brand & Latar Belakang -->
+            <div class="footer-col brand-col">
+                <div class="footer-logos">
+                    <img src="assets/logo-pkse.png" alt="PKSE UNRI" title="Paguyuban KSE UNRI" class="logo-paguyuban">
+                    <div class="separator"></div>
+                    <img src="assets/logo-kabinet.png" alt="Kabinet Cakrawala Asa" title="Kabinet Cakrawala Asa"
+                        class="logo-kabinet">
+                    <div class="separator"></div>
+                    <img src="assets/logo-kse.png" alt="Logo KSE Nasional" title="KSE Nasional" class="logo-kabinet">
+                </div>
+                <h4 class="footer-title">KSEUNRIPEDIA &copy; 2025</h4>
+                <p class="footer-tagline">Menebar inspirasi, meraih prestasi. Portal rujukan beasiswa dan kompetisi
+                    terpusat khusus untuk beswan KSE Universitas Riau.</p>
+
+                <div class="footer-socials premium-socials">
+                    <a href="https://instagram.com/kseunri" target="_blank" class="social-link"
+                        title="Instagram KSE UNRI"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.youtube.com/@paguyubankseunri" class="social-link" title="Youtube KSE UNRI"><i
+                            class="fab fa-youtube"></i></a>
+                    <a href="https://www.linkedin.com/in/paguyuban-kse-ur-98423b294/" class="social-link"
+                        title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                    <a href="https://www.tiktok.com/@kseunri?is_from_webapp=1&sender_device=pc" class="social-link"
+                        title="Tiktok"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+
+            <!-- Kolom 2: Tautan Cepat -->
+            <div class="footer-col links-col">
+                <h5 class="col-title">Tautan Cepat</h5>
+                <ul class="footer-links">
+                    <li><a href="https://www.instagram.com/kseunri" target="_blank"><i class="fas fa-chevron-right"></i>
+                            Tentang Paguyuban</a></li>
+                    <li><a href="https://wa.me/6283874496044" target="_blank"><i class="fas fa-chevron-right"></i>
+                            Laporkan Bug (Admin)</a></li>
+                </ul>
+            </div>
+
+            <!-- Kolom 3: Pengelola -->
+            <div class="footer-col contact-col">
+                <h5 class="col-title">Dikelola Oleh</h5>
+                <div class="pengelola-badge">
+                    <i class="fas fa-award"></i>
+                    <span>Divisi Pendidikan & Pelatihan</span>
+                </div>
+                <p class="footer-paguyuban-name">Paguyuban Karya Salemba Empat<br>Universitas Riau</p>
+                <div class="contact-info">
+                    <p><i class="fas fa-envelope"></i> kseunri@gmail.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Pekanbaru, Riau, Indonesia</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>Didesain dengan <i class="fas fa-heart" style="color:#ef4444;"></i> untuk Beswan KSE UNRI</p>
+        </div>
+    </footer>
+
+    <!-- Tombol Kembali ke Atas (Back to Top) -->
+    <button id="backToTop" class="back-to-top" title="Kembali ke Atas">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
     <script src="js/admin-parser.js"></script>
+    <script>
+        // Back to top behavior
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        });
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
 </body>
 
 </html>

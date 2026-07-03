@@ -4,11 +4,6 @@ const CONFIG = {
         SHEET_NAME: 'Form Responses 1'
     },
 
-    SHEETS_TO_API: {
-        USER_KEY: '4620808b-aa88-43cb-9fe5-25630c2b0c90',
-        SHEET_NAME: 'Form Responses 1',
-        BASE_URL: 'https://sheets.livepolls.app/api/spreadsheets'
-    },
 
     WEBSITE: {
         TITLE: 'Info Lomba KSE',

@@ -19,18 +19,19 @@ Platform ini dirancang dengan alur data yang sederhana namun sangat efisien:
 
 ```mermaid
 graph TD
-    A[KabarLomba.com Scraper / Python] -- Auto POST --> B[Google Form]
-    C[Admin Panel / admin.html] -- Auto NLP Parser + POST --> B
+    A[GitHub Actions / Auto-Scraper] -- Auto POST --> B[Google Form]
+    C[Admin Panel / admin.html] -- Login Gate + Auto NLP + POST --> B
     B --> D[Google Sheet / Database]
     D -- GViz API JSON / Gratis --> E[Web Portal / index.html]
     E --> F[Beswan / Pengguna Akhir]
+    A -- Kirim Notifikasi --> G[Telegram Group / Channel]
 ```
 
 1. **Input Data**: Data masuk melalui dua jalur:
-   * **Otomatis**: Bot Python menscraping situs info lomba dan mengirimkan data via POST ke Google Form.
-   * **Manual**: Admin menginput melalui Admin Panel (`admin.html`) dilengkapi parser berbasis NLP cerdas.
+   * **Otomatis**: Bot Python (yang berjalan di GitHub Actions) men-scrape situs penyedia info lomba, mendeteksi kategori kegiatan secara cerdas, mengirimkan data via POST ke Google Form, serta mengirimkan notifikasi ke Telegram.
+   * **Manual**: Admin menginput melalui Admin Panel (`admin.html`) dilengkapi parser berbasis NLP cerdas dan dilindungi gerbang keamanan login.
 2. **Penyimpanan**: Google Form meneruskan data ke **Google Sheet** sebagai database utama.
-3. **Penyajian**: Halaman portal utama (`index.html`) mengambil data langsung dari Google Sheet melalui **Google Visualization API (GViz)** secara asinkron (fetch) lalu menampilkannya secara interaktif.
+3. **Penyajian**: Halaman portal utama (`index.html`) mengambil data langsung dari Google Sheet melalui **Google Visualization API (GViz)** secara asinkron (fetch) lalu menampilkannya secara interaktif dengan sistem pembagian halaman (pagination).
 
 ---
 
@@ -38,15 +39,22 @@ graph TD
 
 ### 1. 📱 Portal Utama (`index.html`)
 * **Desain UI/UX Modern & Responsif**: Tampilan clean dengan card layout yang dinamis, nyaman dibaca baik di desktop maupun perangkat mobile.
+* **Pemuatan Bertahap (Pagination)**: Hanya memuat **9 lomba per halaman** untuk kecepatan muat website yang super gegas meskipun data sudah mencapai ratusan baris.
+* **Sistem Bookmark / Favorit (Local Storage)**: Pengguna dapat menandai lomba favorit mereka, yang tersimpan aman secara permanen di browser lokal, serta melihat daftarnya melalui tab khusus "Favorit".
+* **Berbagi Info Lomba (Share System)**: Tombol bagikan instan ke WhatsApp, Telegram, dan Twitter dengan format pesan Markdown yang rapi dan terstruktur lengkap dengan emoji menarik.
 * **Sistem Filter & Kategori Cerdas**: Filter info berdasarkan kategori (Lomba, Beasiswa, Magang, Seminar, Karir), status pendaftaran (Buka, Segera, Tutup), dan kolom pencarian yang responsif (*debounced search*).
 * **Indikator Urgensi (Urgency Badge)**: Memberikan tanda visual khusus seperti `🚨 BESOK TUTUP!`, `⏰ TUTUP SEGERA`, atau `🔥 BURUAN!` untuk membantu pengguna tidak melewatkan tenggat waktu pendaftaran.
 * **Modal Detail Interaktif**: Lihat detail deskripsi, manfaat (benefit), penyelenggara, biaya pendaftaran, kontak narahubung, serta tombol langsung menuju link resmi pendaftaran.
 
 ### 2. 🛠️ Panel Admin & Parser Teks (`admin.html`)
+* **Gerbang Keamanan Login**: Mengamankan halaman admin menggunakan autentikasi sederhana bagi Divisi KSE (`DIKLAT2026` / `kakhikmacantik`) berbasis `sessionStorage`.
 * **Penginputan Berbasis AI/NLP Sederhana**: Cukup salin dan tempel (copy-paste) teks deskripsi lomba yang berantakan dari grup WhatsApp atau poster. Sistem akan mengekstrak informasi penting secara otomatis seperti judul, penyelenggara, tanggal pendaftaran, hingga kontak narahubung.
-* **Integrasi Langsung**: Data yang telah terisi otomatis dapat langsung dikirimkan ke database Google Sheet hanya dengan satu kali klik.
+* **Integrasi Langsung & Auto-Approve**: Data yang diinputkan dari panel admin akan langsung tersimpan di Google Sheet dan otomatis tayang langsung di website beranda.
 
-### 3. 🤖 Bot Pencatat Lomba Cerdas (`py/scraper_kabarlomba.py`)
+### 3. 🤖 Bot Scraper & Otomatisasi (`py/scraper_kabarlomba.py` & Actions)
+* **Kategorisasi Otomatis Cerdas**: Mengenali jenis kegiatan secara otomatis (apakah masuk Lomba, Beasiswa, Seminar, Magang, atau Lowongan Kerja) berdasarkan pencocokan teks pintar.
+* **Notifikasi Telegram Instan**: Mengirimkan notifikasi pesan informatif langsung ke Telegram chat/grup pengelola sesaat setelah lomba berhasil disimpan ke database.
+* **GitHub Actions Workflow**: Scraping didelegasikan otomatis ke GitHub Actions untuk berjalan setiap 12 jam sekali, lengkap dengan skema komit mandiri berkas `scraped_history.json` untuk menjaga sinkronisasi *history* secara gratis.
 * **Scraping Konkuren (Multi-threaded)**: Menggunakan `ThreadPoolExecutor` untuk memproses banyak artikel secara bersamaan dengan cepat dan efisien.
 * **Ekstraksi Berbasis AI (Gemini)**: Jika API Key Gemini tersedia, bot akan memproses deskripsi lomba menggunakan Model AI Gemini untuk akurasi data yang super presisi. Jika tidak, sistem akan otomatis melakukan fallback ke parser regex yang tangguh.
 * **Sistem Anti-Duplikasi (History)**: Menyimpan riwayat artikel yang sudah discrape ke dalam `scraped_history.json` untuk menghindari pengiriman data ganda.

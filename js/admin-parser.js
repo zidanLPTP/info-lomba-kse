@@ -344,3 +344,52 @@ function parseDateString(dateStr) {
     future.setDate(future.getDate() + 14);
     return future.toISOString().split('T')[0];
 }
+
+// ponytail: Simple Admin Gate Authentication (DIKLAT2026 / kakhikmacantik)
+document.addEventListener('DOMContentLoaded', () => {
+    const loginGate = document.getElementById('loginGate');
+    const loginForm = document.getElementById('loginForm');
+    const usernameInput = document.getElementById('usernameInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginErrorMessage = document.getElementById('loginErrorMessage');
+
+    const checkAuth = () => {
+        if (sessionStorage.getItem('admin_auth') === 'true') {
+            document.body.classList.remove('auth-locked');
+            if (loginGate) loginGate.style.display = 'none';
+        } else {
+            document.body.classList.add('auth-locked');
+            if (loginGate) loginGate.style.display = 'flex';
+        }
+    };
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (username === 'DIKLAT2026' && password === 'kakhikmacantik') {
+                sessionStorage.setItem('admin_auth', 'true');
+                checkAuth();
+                loginForm.reset();
+            } else {
+                loginErrorMessage.textContent = 'Username atau Password salah!';
+                loginErrorMessage.style.display = 'block';
+                setTimeout(() => {
+                    loginErrorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+    }
+
+    checkAuth();
+    
+    const btnLogout = document.getElementById('btnLogout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', () => {
+            sessionStorage.removeItem('admin_auth');
+            window.location.reload();
+        });
+    }
+});

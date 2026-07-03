@@ -311,6 +311,18 @@ def get_level_and_partisipasi(text):
         
     return level, partisipasi
 
+def extract_jenis_informasi(text, title):
+    combined = (title + " " + text).lower()
+    if "beasiswa" in combined or "scholarship" in combined:
+        return "Beasiswa"
+    elif "magang" in combined or "internship" in combined:
+        return "Magang"
+    elif "lowongan kerja" in combined or "loker" in combined or "recruitment" in combined or "karir" in combined or "job vacancy" in combined:
+        return "Lowongan Kerja"
+    elif "seminar" in combined or "webinar" in combined or "talkshow" in combined or "workshop" in combined or "kuliah umum" in combined:
+        return "Seminar"
+    return "Lomba"
+
 def extract_kategori_dan_bidang(text):
     t = text.lower()
     kategori = "Nasional"
@@ -337,7 +349,7 @@ def extract_with_gemini(full_text, title_hint):
         
     try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
-        prompt = f"""Analisis teks artikel lomba/kegiatan mahasiswa berikut dan ekstrak informasinya dalam bahasa Indonesia.
+        prompt = f"""Analisis teks artikel kegiatan mahasiswa berikut dan ekstrak informasinya dalam bahasa Indonesia.
 Judul artikel: {title_hint}
 
 Teks artikel:
@@ -345,6 +357,7 @@ Teks artikel:
 
 Kembalikan respon HANYA dalam format JSON mentah tanpa tag markdown dengan struktur seperti ini:
 {{
+  "jenis": "Lomba ATAU Beasiswa ATAU Seminar ATAU Magang ATAU Lowongan Kerja (kategori kegiatan yang paling tepat)",
   "judul": "Judul kegiatan yang bersih",
   "penyelenggara": "Nama universitas/perusahaan/BEM/HIMA penyelenggara",
   "tanggal_mulai": "YYYY-MM-DD (tanggal mulai pendaftaran, gunakan hari ini jika tidak disebutkan)",
@@ -392,7 +405,7 @@ Penting: Kembalikan string JSON mentah. Jangan sertakan pembungkus seperti ```js
 def kirim(item):
     try:
         data = {
-            "entry.558548208": "Lomba",
+            "entry.558548208": item.get('jenis', 'Lomba'),
             "entry.149191259": item['judul'],
             "entry.978408814": item['kategori'],
             "entry.205610016": item['bidang'],
@@ -450,6 +463,7 @@ def process_article(artikel_url, judul_lomba):
     if gemini_data:
         logging.info(f"Ekstraksi Gemini sukses untuk: {judul_lomba_fix}")
         item = {
+            "jenis": gemini_data.get("jenis", "Lomba"),
             "judul": gemini_data.get("judul", judul_lomba_fix),
             "penyelenggara": gemini_data.get("penyelenggara", "Tidak diketahui"),
             "deadline": gemini_data.get("deadline", datetime.now().strftime("%Y-%m-%d")),
@@ -468,6 +482,7 @@ def process_article(artikel_url, judul_lomba):
     else:
         # Fallback ke Parsing Regex Tradisional
         logging.info(f"Menggunakan ekstraksi Regex (Rule-Based): {judul_lomba_fix}")
+        jenis = extract_jenis_informasi(full_text, judul_lomba_fix)
         penyelenggara = extract_penyelenggara(full_text)
         tgl_mulai, deadline = extract_timeline(full_text)
         biaya = extract_biaya(full_text)
@@ -480,6 +495,7 @@ def process_article(artikel_url, judul_lomba):
         deskripsi = clean_text(full_text)[:150] + "..."
 
         item = {
+            "jenis": jenis,
             "judul": judul_lomba_fix,
             "penyelenggara": penyelenggara,
             "deadline": deadline,
@@ -496,8 +512,10 @@ def process_article(artikel_url, judul_lomba):
             "deskripsi": deskripsi
         }
     
-    if item["pelaksanaan"] != "Online":
-        logging.info(f"Dilewati (Bukan Online): {item['judul']}")
+    # Penyaringan Pelaksanaan: Lomba & Seminar wajib Online/Hybrid (karena travel overhead)
+    # Magang & Loker diperbolehkan Offline (relevan untuk kerja/magang lokal atau remot)
+    if item["jenis"] in ["Lomba", "Seminar"] and item["pelaksanaan"] not in ["Online", "Hybrid"]:
+        logging.info(f"Dilewati ({item['jenis']} bukan Online/Hybrid): {item['judul']}")
         return None
         
     if item["level"] == "SMA/Sederajat":

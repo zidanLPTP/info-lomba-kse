@@ -8,6 +8,9 @@ class InfoLombaApp {
             category: 'all',
             status: 'all'
         };
+        // ponytail: pagination settings
+        this.currentPage = 1;
+        this.itemsPerPage = 9;
         this.init();
     }
 
@@ -27,6 +30,7 @@ class InfoLombaApp {
         // Search Listener
         document.getElementById('searchInput').addEventListener('input', this.debounce((e) => {
             this.currentFilters.search = e.target.value;
+            this.currentPage = 1; // Reset ke halaman 1
             this.renderData();
         }, 300));
 
@@ -38,6 +42,7 @@ class InfoLombaApp {
                 target.classList.add('active');
 
                 this.currentFilters.category = target.dataset.category;
+                this.currentPage = 1; // Reset ke halaman 1
                 this.renderData();
             });
         });
@@ -49,6 +54,7 @@ class InfoLombaApp {
                 e.target.classList.add('active');
 
                 this.currentFilters.status = e.target.dataset.status;
+                this.currentPage = 1; // Reset ke halaman 1
                 this.renderData();
             });
         });
@@ -265,14 +271,70 @@ class InfoLombaApp {
         const filteredData = this.filterData();
         const container = document.getElementById('lombaContainer');
         const noResults = document.getElementById('noResults');
+        const paginationContainer = document.getElementById('paginationContainer');
 
         if (filteredData.length === 0) {
             container.style.display = 'none';
             noResults.style.display = 'block';
+            if (paginationContainer) paginationContainer.style.display = 'none';
         } else {
             container.style.display = 'grid';
             noResults.style.display = 'none';
-            container.innerHTML = this.generateCardsHTML(filteredData);
+            
+            // Slice data sesuai halaman aktif (pagination)
+            const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+            const endIndex = startIndex + this.itemsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+            
+            container.innerHTML = this.generateCardsHTML(paginatedData);
+            
+            // Render kontrol pagination
+            this.renderPagination(filteredData.length);
+        }
+    }
+
+    renderPagination(totalItems) {
+        const paginationContainer = document.getElementById('paginationContainer');
+        if (!paginationContainer) return;
+
+        const totalPages = Math.ceil(totalItems / this.itemsPerPage);
+        
+        // Sembunyikan pagination jika hanya ada 1 halaman
+        if (totalPages <= 1) {
+            paginationContainer.style.display = 'none';
+            return;
+        }
+
+        paginationContainer.style.display = 'flex';
+        let html = '';
+
+        // Tombol Sebelumnya
+        html += `<button class="pagination-btn" ${this.currentPage === 1 ? 'disabled' : ''} onclick="app.changePage(${this.currentPage - 1})" title="Halaman Sebelumnya">
+            <i class="fas fa-chevron-left"></i>
+        </button>`;
+
+        // Halaman angka
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="pagination-btn ${this.currentPage === i ? 'active' : ''}" onclick="app.changePage(${i})">
+                ${i}
+            </button>`;
+        }
+
+        // Tombol Selanjutnya
+        html += `<button class="pagination-btn" ${this.currentPage === totalPages ? 'disabled' : ''} onclick="app.changePage(${this.currentPage + 1})" title="Halaman Selanjutnya">
+            <i class="fas fa-chevron-right"></i>
+        </button>`;
+
+        paginationContainer.innerHTML = html;
+    }
+
+    changePage(pageNumber) {
+        this.currentPage = pageNumber;
+        this.renderData();
+        // Scroll smooth ke area pencarian agar list baru terlihat dari atas
+        const element = document.getElementById('searchInput');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }
 

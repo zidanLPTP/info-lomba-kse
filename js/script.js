@@ -182,8 +182,12 @@ class InfoLombaApp {
 
             let rawStatus = this.findValueByKey(record, 'STATUS_APPROVAL') || 'PENDING';
 
+            // ID Stabil berdasarkan Timestamp dan Judul
+            let timestamp = clean('Timestamp', '');
+            let safeId = 'item_' + (timestamp + judul).toLowerCase().replace(/[^a-z0-9]/g, '');
+
             const cleaned = {
-                id: 'item_' + Math.random().toString(36).substr(2, 9),
+                id: safeId,
                 judul: judul,
                 jenis: jenisInfo, // Ini kunci utamanya
                 penyelenggara: penyelenggara,
@@ -225,6 +229,9 @@ class InfoLombaApp {
                     item.jenis.toLowerCase().includes('loker') ||
                     item.jenis.toLowerCase().includes('lowongan')
                 );
+            } else if (this.currentFilters.category === 'bookmark') {
+                const bookmarks = JSON.parse(localStorage.getItem('kse_bookmarks') || '[]');
+                filtered = filtered.filter(item => bookmarks.includes(item.id));
             } else {
                 filtered = filtered.filter(item =>
                     item.jenis.toLowerCase().includes(this.currentFilters.category.toLowerCase())
@@ -266,7 +273,12 @@ class InfoLombaApp {
     }
 
     generateCardsHTML(data) {
+        const bookmarks = JSON.parse(localStorage.getItem('kse_bookmarks') || '[]');
         return data.map(item => {
+            const isBookmarked = bookmarks.includes(item.id);
+            const bookmarkIcon = isBookmarked ? 'fa-solid fa-bookmark' : 'fa-regular fa-bookmark';
+            const bookmarkClass = isBookmarked ? 'active' : '';
+
             // Ikon dinamis sesuai jenis
             let iconClass = 'fa-trophy';
             if (item.jenis.toLowerCase().includes('beasiswa')) iconClass = 'fa-graduation-cap';
@@ -303,9 +315,14 @@ class InfoLombaApp {
                         <span class="category-badge">
                             <i class="fas ${iconClass}"></i> ${item.jenis}
                         </span>
-                        <span class="status-badge ${item.status}">
-                            ${this.getStatusText(item.status)}
-                        </span>
+                        <div class="card-header-actions">
+                            <button class="btn-bookmark ${bookmarkClass}" onclick="event.stopPropagation(); app.toggleBookmark('${item.id}')" title="Simpan ke Favorit">
+                                <i class="${bookmarkIcon}"></i>
+                            </button>
+                            <span class="status-badge ${item.status}">
+                                ${this.getStatusText(item.status)}
+                            </span>
+                        </div>
                     </div>
                     
                     <h3 class="card-title">${this.escapeHTML(item.judul)}</h3>
@@ -334,9 +351,7 @@ class InfoLombaApp {
                 </div> 
             </div>
         `}).join('');
-    }
-
-    // Modal Detail
+    }    // Modal Detail
     showDetail(itemId) {
         const item = this.allData.find(i => i.id === itemId);
         if (!item) return;
@@ -388,6 +403,21 @@ class InfoLombaApp {
                     <li><i class="fas fa-user"></i> Kontak: ${this.escapeHTML(item.kontak)}</li>
                 </ul>
             </div>
+
+            <div class="modal-section share-container">
+                <h5 class="share-title"><i class="fas fa-share-alt"></i> Bagikan Info</h5>
+                <div class="share-grid">
+                    <button class="btn-share wa" onclick="app.share('whatsapp', '${item.id}')">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="btn-share tg" onclick="app.share('telegram', '${item.id}')">
+                        <i class="fab fa-telegram-plane"></i> Telegram
+                    </button>
+                    <button class="btn-share tw" onclick="app.share('twitter', '${item.id}')">
+                        <i class="fab fa-twitter"></i> Twitter
+                    </button>
+                </div>
+            </div>
             
             ${item.link ?
                 `<div class="modal-action-wrapper" style="position: sticky; bottom: -2.5rem; background: rgba(255,255,255,0.95); backdrop-filter: blur(5px); padding: 1.5rem 2.5rem; margin: 2rem -2.5rem -2.5rem -2.5rem; border-top: 1px solid var(--border); border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 -10px 20px rgba(0,0,0,0.03);">
@@ -398,6 +428,65 @@ class InfoLombaApp {
         document.getElementById('detailModal').style.display = 'flex';
         setTimeout(() => document.getElementById('detailModal').classList.add('show'), 10);
     }
+
+    // Share Handler dengan Format WhatsApp, Telegram, Twitter yang Mantap
+    share(platform, itemId) {
+        const item = this.allData.find(i => i.id === itemId);
+        if (!item) return;
+
+        const judul = item.judul;
+        const penyelenggara = item.penyelenggara;
+        const jenis = item.jenis;
+        const bidang = item.bidang;
+        const biaya = item.biaya;
+        const benefit = item.benefit.substring(0, 150) + (item.benefit.length > 150 ? '...' : '');
+        const deadline = this.formatDate(item.deadline);
+        const link = item.link || window.location.href;
+
+        let message = `📢 *INFO ${jenis.toUpperCase()} BARU - KSEUNRIPEDIA* 🎓\n\n`;
+        message += `*🏆 ${judul}*\n`;
+        message += `_Penyelenggara: ${penyelenggara}_\n\n`;
+        message += `📌 *Bidang*: ${bidang}\n`;
+        message += `💸 *Biaya*: ${biaya}\n`;
+        message += `🎁 *Benefit/Hadiah*: ${benefit}\n`;
+        message += `⏰ *Deadline*: ${deadline}\n\n`;
+        message += `🔗 *Link Resmi/Pendaftaran*:\n${link}\n\n`;
+        message += `Ayo persiapkan diri Anda dan raih prestasi bersama KSE UNRI!\n`;
+        message += `Detail lengkap: ${window.location.href}`;
+
+        const encodedMsg = encodeURIComponent(message);
+        
+        let shareUrl = '';
+        if (platform === 'whatsapp') {
+            shareUrl = `https://api.whatsapp.com/send?text=${encodedMsg}`;
+        } else if (platform === 'telegram') {
+            const plainMessage = message.replace(/\*/g, '').replace(/_/g, '');
+            shareUrl = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(plainMessage)}`;
+        } else if (platform === 'twitter') {
+            const tweet = `📢 INFO ${jenis.toUpperCase()} BARU: ${judul} oleh ${penyelenggara}. Deadline: ${deadline}. Selengkapnya di:`;
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}&url=${encodeURIComponent(link)}`;
+        }
+
+        if (shareUrl) {
+            window.open(shareUrl, '_blank');
+        }
+    }
+
+    // Toggle bookmark dan simpan di localStorage
+    toggleBookmark(itemId) {
+        let bookmarks = JSON.parse(localStorage.getItem('kse_bookmarks') || '[]');
+        const index = bookmarks.indexOf(itemId);
+        
+        if (index === -1) {
+            bookmarks.push(itemId);
+        } else {
+            bookmarks.splice(index, 1);
+        }
+        
+        localStorage.setItem('kse_bookmarks', JSON.stringify(bookmarks));
+        this.renderData();
+    }
+
 
     closeDetailModal() {
         const modal = document.getElementById('detailModal');

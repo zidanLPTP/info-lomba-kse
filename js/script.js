@@ -180,7 +180,11 @@ class InfoLombaApp {
             // Mapping Benefit
             let benefit = clean('BENEFIT / HADIAH', clean('HADIAH & PENGHARGAAN', 'Lihat detail'));
 
-            let rawStatus = this.findValueByKey(record, 'STATUS_APPROVAL') || 'PENDING';
+            // Jika kolom STATUS_APPROVAL kosong di Google Sheet, default ke APPROVED agar langsung muncul di web
+            let rawStatus = this.findValueByKey(record, 'STATUS_APPROVAL');
+            if (!rawStatus || rawStatus.toString().trim() === '') {
+                rawStatus = 'APPROVED';
+            }
 
             // ID Stabil berdasarkan Timestamp dan Judul
             let timestamp = clean('Timestamp', '');

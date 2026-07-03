@@ -17,7 +17,7 @@ py/scraper_history.json
 py/form_data.txt
 
 # Private Python Scripts (Based on previous config)
-py/scraper_kabarlomba.py
+# py/scraper_kabarlomba.py
 py/check_form.py
 py/parse_form.py
 py/test_payload.py

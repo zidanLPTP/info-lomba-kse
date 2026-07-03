@@ -93,22 +93,47 @@ class InfoLombaApp {
     async loadData() {
         try {
             this.showLoading(true);
-            const apiUrl = `${CONFIG.SHEETS_TO_API.BASE_URL}/${CONFIG.SHEETS_TO_API.USER_KEY}/${encodeURIComponent(CONFIG.SHEETS_TO_API.SHEET_NAME)}`;
+            
+            // Menggunakan Google Sheets GViz API untuk membaca data secara gratis dan langsung
+            const sheetId = CONFIG.GOOGLE_SHEET.SHEET_ID;
+            const sheetName = CONFIG.GOOGLE_SHEET.SHEET_NAME;
+            const apiUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
 
             const response = await fetch(apiUrl);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-            const data = await response.json();
-
-            // Diagnostik Header
-            if (data.data && data.data.length > 0) {
-                console.log('🔍 HEADER DETECTED:', Object.keys(data.data[0]));
+            const text = await response.text();
+            
+            // Bersihkan wrapper google.visualization.Query.setResponse(...)
+            const jsonStart = text.indexOf('{');
+            const jsonEnd = text.lastIndexOf('}');
+            if (jsonStart === -1 || jsonEnd === -1) {
+                throw new Error('Format data Google Sheets tidak valid.');
+            }
+            
+            const jsonString = text.substring(jsonStart, jsonEnd + 1);
+            const rawData = JSON.parse(jsonString);
+            
+            if (rawData.status !== 'ok') {
+                throw new Error('Gagal mengambil data dari Google Sheets.');
             }
 
+            const table = rawData.table;
+            const cols = table.cols.map(col => col.label || col.id);
+            const rows = table.rows.map(row => {
+                const item = {};
+                row.c.forEach((cell, index) => {
+                    const colName = cols[index];
+                    if (colName) {
+                        // Prefer f (formatted value, e.g. for dates "24/04/2026") over v (raw value)
+                        item[colName] = cell ? (cell.f !== undefined ? cell.f : cell.v) : null;
+                    }
+                });
+                return item;
+            });
 
-            console.log("📦 RAW DATA:", data);
-            const actualData = Array.isArray(data) ? data : (data.data || []);
-            this.allData = this.processApiData(actualData);
+            console.log("📦 RAW DATA:", rows);
+            this.allData = this.processApiData(rows);
             console.log(` Loaded ${this.allData.length} items`);
             this.renderData();
 

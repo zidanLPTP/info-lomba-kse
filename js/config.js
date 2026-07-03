@@ -1,4 +1,9 @@
 const CONFIG = {
+    GOOGLE_SHEET: {
+        SHEET_ID: '1tiJvmSgStMlXh54f-8HkW_vJeRyg0RvDC_qsu_N0FIg',
+        SHEET_NAME: 'Form Responses 1'
+    },
+
     SHEETS_TO_API: {
         USER_KEY: '4620808b-aa88-43cb-9fe5-25630c2b0c90',
         SHEET_NAME: 'Form Responses 1',

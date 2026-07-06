@@ -262,6 +262,10 @@ class InfoLombaApp {
         // 4. Filter Status Waktu
         if (this.currentFilters.status !== 'all') {
             filtered = filtered.filter(item => item.status === this.currentFilters.status);
+        } else {
+            // Sembunyikan yang sudah Tutup (closed) agar otomatis terarsip secara real-time
+            // jika naskah Google Apps Script belum sempat berjalan membersihkan sheet
+            filtered = filtered.filter(item => item.status !== 'closed');
         }
 
         return filtered;
